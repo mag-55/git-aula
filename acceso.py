@@ -28,6 +28,9 @@ def chequear():
 	cajaUno.delete(0, END)
 	cajaDos.delete(0, END)
 
+def prueba():
+	messagebox.showwarning(title= "Prueba", message= "esto es una prueba")
+
 
 #----------- VENTANA ACCESO -----------
 raiz = Tk()
