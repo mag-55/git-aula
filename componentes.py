@@ -1,54 +1,46 @@
-
-#!/usr/local/bin/python
+# !/usr/local/bin/python
 # -*- coding: utf-8 -*-
 
-from tkinter import *
+import tkinter as tk
+#from tkinter import ttk
 
 """Este módulo está orientado a crear componentes sencillos de un formulario"""
 
+#---------- ORDENAR ELEMENTOS ------------------
+
 
 def ordenar(obj="", fila=0, col=0, x=0, y=0, coord="", cols=1, rows=1):
-	widget=obj.grid(row=fila, column=col,  padx=x, pady=y, sticky=coord, columnspan=cols, rowspan=rows)
-
-
-#---------- DUPLICAR ELEMENTOS ------------------
-def duplicarEtiqueta(contenedor, lista):
-	for i in range(len(lista)):
-		ordenar(crear_E(contenedor, lista[i]), i, 0, 5)
-
-
-def duplicarCaja(contenedor, lista):
-	listaCaja = []
-	for i in range(len(lista)):
-		listaCaja = crear_C(contenedor, "50")
-		ordenar(listaCaja, i, 1, 5, 5)
-	return listaCaja
-
-
-def duplicarBoton(contenedor, lista, comando, nf= 0):
-	for i in range(len(lista)):
-		ordenar(crear_B(contenedor, lista[i], "10", comando[i]), nf, i, 5, 5)
+    obj.grid(row=fila, column=col, padx=x, pady=y,sticky=coord, columnspan=cols, rowspan=rows)
 
 
 #---------- CREAR ELEMENTOS ------------------
-def crear_E(contenedor, titulo= ""):
-	etiqueta = Label(contenedor, text= titulo)
-	return etiqueta
+
+def crear_M(contenedor, ancho="10", alto="10"):
+    marco = tk.Frame(contenedor, width=ancho, height=alto)
+    return marco
 
 
-def crear_C(contenedor, ancho= "15"):
-	caja = Entry(contenedor, width= ancho)
-	return caja
+def crear_E(contenedor, titulo=""):
+    etiqueta = tk.Label(contenedor, text=titulo)
+    return etiqueta
 
 
+def crear_C(contenedor, ancho="15", relieve="sunken", texv=""):
+    caja = tk.Entry(contenedor, width=ancho, relief=relieve, textvariable=texv)
+    return caja
 
-def crear_B(contenedor, titulo= "", ancho= "", comando= ""):
-	boton = Button(contenedor, text= titulo, width= ancho, command= comando)
-	return boton
+
+def crear_B(contenedor, titulo="", ancho="10", comando=""):
+    boton = tk.Button(contenedor, text=titulo, width=ancho, command=comando)
+    return boton
+
+
+def crear_Sp(contenedor, valores="", ancho="20", estado="", posicion="", texv="", comando=""):
+    listaSpin = tk.Spinbox(contenedor, values=valores, width=ancho,
+                           state=estado, justify=posicion, textvariable=texv, command=comando)
+    return listaSpin
 
 
 # def crear_Rb(contenedor, titulo="", valor= 0, var= var ):
 # 	radioBoton = Radiobutton(contenedor, text= titulo, value= valor, variable= var)
 # 	return radioBoton
-
-
