@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
-#from tkinter import ttk
+from tkinter import ttk
 
 """Este módulo está orientado a crear componentes sencillos de un formulario"""
 
@@ -10,7 +10,8 @@ import tkinter as tk
 
 
 def ordenar(obj="", fila=0, col=0, x=0, y=0, coord="", cols=1, rows=1):
-    obj.grid(row=fila, column=col, padx=x, pady=y,sticky=coord, columnspan=cols, rowspan=rows)
+    obj.grid(row=fila, column=col, padx=x, pady=y,
+             sticky=coord, columnspan=cols, rowspan=rows)
 
 
 #---------- CREAR ELEMENTOS ------------------
@@ -25,8 +26,8 @@ def crear_E(contenedor, titulo=""):
     return etiqueta
 
 
-def crear_C(contenedor, ancho="15", relieve="sunken", texv=""):
-    caja = tk.Entry(contenedor, width=ancho, relief=relieve, textvariable=texv)
+def crear_C(contenedor, ancho="15", texv=""):
+    caja = tk.Entry(contenedor, width=ancho, textvariable=texv)
     return caja
 
 
@@ -41,6 +42,12 @@ def crear_Sp(contenedor, valores="", ancho="20", estado="", posicion="", texv=""
     return listaSpin
 
 
-# def crear_Rb(contenedor, titulo="", valor= 0, var= var ):
-# 	radioBoton = Radiobutton(contenedor, text= titulo, value= valor, variable= var)
-# 	return radioBoton
+def crear_Rb(contenedor, titulo="", valor=0, var=""):
+   radioBoton = tk.Radiobutton(contenedor, text=titulo,
+                            value=valor, variable=var)
+   return radioBoton
+
+
+def crear_Lb(contenedor, ancho="", alto="", modo="SINGLE"):
+    cajaList = tk.Listbox(contenedor, width=ancho, height=alto, selectmode=modo)
+    return cajaList

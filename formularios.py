@@ -47,7 +47,7 @@ class Acceso():
         for i in range(len(lista)):
             self.listaCaja.append(cpt.crear_C(marcoUno, "40"))
             self.listaCaja[i].insert(0, lista[i])
-            self.listaCaja[i].configure(fg="gray")
+            self.listaCaja[i].configure(foreground="gray")
             cpt.ordenar(self.listaCaja[i], i, 0, 5, 5)
 
         self.listaCaja[0].bind("<Button-1>", self.limpiar)
@@ -57,7 +57,7 @@ class Acceso():
         #----------- ETIQUETA mUNO-----------
 
         crearUs = cpt.crear_E(marcoUno, "Crear nuevo usuario")
-        crearUs.configure(fg="#ff5733", font=("arial", 8, "bold"))
+        crearUs.configure(foreground="#ff5733", font=("arial", 8, "bold"))
         cpt.ordenar(crearUs, 2, 0, 5, 0, "w")
         crearUs.bind("<Button-1>", self.registrar)
 
@@ -157,44 +157,41 @@ class registroGral():
     def __init__(self, ventana):
         self.ventana = ventana
         self.ventana.title("BIENVENIDO AL AULA")
-        self.listaBoton = []
-        self.listaEtiqueta = []
-        self.listaCaja = []
         self.list_spin = None
         self.marcoSpin = cpt.crear_M(self.ventana, "500", "50")
         cpt.ordenar(self.marcoSpin, 0, 0)
         self.marcoDos = cpt.crear_M(self.ventana, "500", "0")
         self.ocultar(self.marcoDos)
-        #cpt.ordenar(self.marcoDos, 1, 0)
         self.marcoTres = cpt.crear_M(self.ventana, "500", "0")
         self.ocultar(self.marcoTres)
-        #cpt.ordenar(self.marcoTres, 1, 0)
         self.marcoCuatro = cpt.crear_M(self.ventana, "500", "0")
         self.ocultar(self.marcoCuatro)
-        #cpt.ordenar(self.marcoCuatro, 1, 0)
         self.marcoCinco = cpt.crear_M(self.ventana, "500", "0")
         self.ocultar(self.marcoCinco)
-        #cpt.ordenar(self.marcoCinco, 1, 0)
         self.marcoBoton = cpt.crear_M(self.ventana, "500", "15")
         cpt.ordenar(self.marcoBoton, 2, 0)
         self.mostrarProfesor()
         self.mostrarAlumnos()
-        self.mostrarMaterias()
         self.mostrarCursos()
+        self.mostrarMaterias()
 
     def registrarGral(self):
-        lista = ("SELECCIONE UNA OPCION", "PROFESORES", "MATERIAS", "ALUMNOS", "CURSOS")
-        lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE","EDITAR", "BORRAR", "SALIR")
+        lista = ("SELECCIONE UNA OPCION", "PROFESORES",
+                 "ALUMNOS", "CURSOS", "MATERIAS")
+        lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE",
+                  "EDITAR", "BORRAR", "SALIR")
+        listaBoton = []
         comando = quit
         seleccion = self.ventana.register(self.capturar)
 
-        self.list_spin = cpt.crear_Sp(self.marcoSpin, lista, "80", "normal", "center", comando=(seleccion, "%d"))
+        self.list_spin = cpt.crear_Sp(
+            self.marcoSpin, lista, "80", "normal", "center", comando=seleccion)
         cpt.ordenar(self.list_spin, 0, 0, 5, 5, "N")
 
         for i in range(len(lista2)):
-            self.listaBoton.append(cpt.crear_B(
+            listaBoton.append(cpt.crear_B(
                 self.marcoBoton, lista2[i], "10", comando))
-            cpt.ordenar(self.listaBoton[i], 0, i, 0, 5)
+            cpt.ordenar(listaBoton[i], 0, i, 0, 5)
 
     def ocultar(self, marco):
         marco.grid_forget()
@@ -202,32 +199,31 @@ class registroGral():
     def mostar(self, marco):
         cpt.ordenar(marco, 1, 0)
 
-    def capturar(self, direccion):
+    def capturar(self):
         captura = self.list_spin.get()
-        print(captura)
-        print(direccion)
-        
+
         if captura == "PROFESORES":
-            self.ocultar(self.marcoCinco)
-            self.mostar(self.marcoDos)
-        elif captura == "MATERIAS":
-            self.ocultar(self.marcoDos)
             self.ocultar(self.marcoTres)
-            self.mostar(self.marcoCinco)
+            self.mostar(self.marcoDos)
         elif captura == "ALUMNOS":
-            self.ocultar(self.marcoCinco)
+            self.ocultar(self.marcoDos)
             self.ocultar(self.marcoCuatro)
             self.mostar(self.marcoTres)
         elif captura == "CURSOS":
             self.ocultar(self.marcoTres)
+            self.ocultar(self.marcoCinco)
             self.mostar(self.marcoCuatro)
+        elif captura == "MATERIAS":
+            self.ocultar(self.marcoCuatro)
+            self.mostar(self.marcoCinco)
         else:
             self.ocultar(self.marcoDos)
 
     def mostrarProfesor(self):
         listaEtiqueta = []
         listaCaja = []
-        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL", "MAIL")
+        lista = ("NOMBRE", "APELLIDO", "DNI",
+                 "FECHA", "DIRECCION", "TEL", "MAIL")
 
         for i in range(len(lista)):
             listaEtiqueta.append(cpt.crear_E(self.marcoDos, lista[i]))
@@ -240,7 +236,8 @@ class registroGral():
     def mostrarAlumnos(self):
         listaEtiqueta = []
         listaCaja = []
-        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "PADRE", "MADRE", "TEL", "MAIL", "CURSO")
+        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL",
+                 "PADRE", "TRABAJO", "TEL", "MADRE", "TRABAJO", "TEL", "MAIL", "CURSO")
 
         for i in range(len(lista)):
             listaEtiqueta.append(cpt.crear_E(self.marcoTres, lista[i]))
@@ -251,17 +248,43 @@ class registroGral():
             cpt.ordenar(listaCaja[i], i, 1, 5, 5)
 
     def mostrarCursos(self):
-        listaEtiqueta = []
-        listaCaja = []
-        lista = ("NOMBRE", "MATERIAS")
+        list_spin1 = None
+        listaRb = []
+        listaRb2 = []
+        lista = ("PRIMERO", "SEGUNDO", "TERCERO", "CUARTO", "QUINTO")
+        lista2 = ("A", "B")
+        lista3 = ("M", "T")
+        selec = tk.IntVar()
+        selec2 = tk.IntVar()
 
-        for i in range(len(lista)):
-            listaEtiqueta.append(cpt.crear_E(self.marcoCuatro, lista[i]))
-            cpt.ordenar(listaEtiqueta[i], i, 0, 5, 5)
+        etiqueta_curso = cpt.crear_E(self.marcoCuatro, "AÑO")
+        cpt.ordenar(etiqueta_curso, 0, 0, 5, 5)
+        list_spin1 = cpt.crear_Sp(
+            self.marcoCuatro, lista, "15", "normal", "center")
+        cpt.ordenar(list_spin1, 0, 1, 5, 5)
 
-        for i in range(len(lista)):
-            listaCaja.append(cpt.crear_C(self.marcoCuatro, "70"))
-            cpt.ordenar(listaCaja[i], i, 1, 5, 5)
+        for i in range(len(lista2)):
+            listaRb.append(cpt.crear_Rb(self.marcoCuatro, lista2[i], i, selec))
+            cpt.ordenar(listaRb[i], 0, i + 2, 5, 5)
+
+        for i in range(len(lista3)):
+            listaRb2.append(cpt.crear_Rb(self.marcoCuatro, lista3[i], i, selec2))
+            cpt.ordenar(listaRb2[i], 0, i + 4, 5, 5)
+
+        etiqueta_materias = cpt.crear_E(self.marcoCuatro, "LISTA DE MATERIAS")
+        cpt.ordenar(etiqueta_materias, 1, 0, 5, 5, "", 6)
+        caja = cpt.crear_Lb(self.marcoCuatro, "60", "4")
+        cpt.ordenar(caja, 2, 0, 5, 5, "", 6)
+
+        etiqueta_profesor = cpt.crear_E(self.marcoCuatro, "LISTA DE PROFESORES")
+        cpt.ordenar(etiqueta_profesor, 3, 0, 5, 5, "", 6)
+        caja1 = cpt.crear_Lb(self.marcoCuatro, "60", "4")
+        cpt.ordenar(caja1, 4, 0, 5, 5, "", 6)
+
+        etiqueta_alunmos = cpt.crear_E(self.marcoCuatro, "LISTA DE ALUMNOS")
+        cpt.ordenar(etiqueta_alunmos, 5, 0, 5, 5, "", 6)
+        caja3 = cpt.crear_Lb(self.marcoCuatro, "60", "4")
+        cpt.ordenar(caja3, 6, 0, 5, 5, "", 6)
 
     def mostrarMaterias(self):
         listaEtiqueta = []
@@ -275,5 +298,3 @@ class registroGral():
         for i in range(len(lista)):
             listaCaja.append(cpt.crear_C(self.marcoCinco, "70"))
             cpt.ordenar(listaCaja[i], i, 1, 5, 5)
-
-    
