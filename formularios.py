@@ -6,6 +6,8 @@ import tkinter as tk
 import inicio as inc
 import componentes as cpt
 import claves as clv
+import conexion as con 
+#from conexion.Base import get_i
 
 # FORMULARIO DE INGRESO permite accder a la aplicación en si
 
@@ -90,7 +92,7 @@ class Acceso():
 # FORMULARIO DE REGISTRO DE NUEVO USUARIO
 
 
-class registroUsuario():
+class RegistroUsuario():
 
     def __init__(self, ventana):
         self.ventana = ventana
@@ -98,16 +100,18 @@ class registroUsuario():
         self.listaEtiqueta = []
         self.listaCaja = []
         self.listaBoton = []
-
+        self.lista_v = []
+        self.var = tk.StringVar()
+        
     def registrarUs(self):
-        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION",
-                 "TEL", "MAIL", "USUARIO", "CLAVE", "CONF CLAVE")
-        lista2 = ("GUARDAR", "EDITAR", "BORRAR", "LIMPIAR", "SALIR")
-        comando = [quit, quit, quit, quit, quit]
+        lista = ( "USUARIO", "CLAVE", "CONF CLAVE", "NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO",
+                 "LOCALIDAD", "CP")
+        lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
+        comando = [self.guardar, self.mostar, self.mostar, quit, quit, quit]
 
         #----------- MARCO UNO Y DOS-----------
 
-        marcoUno = cpt.crear_M(self.ventana, "500", "400")
+        marcoUno = cpt.crear_M(self.ventana, "500",  "400")
         cpt.ordenar(marcoUno, 0, 0)
 
         marcoDos = cpt.crear_M(self.ventana, "500", "50")
@@ -123,36 +127,80 @@ class registroUsuario():
 
         for i in range(len(lista)):
             self.listaCaja.append(cpt.crear_C(marcoUno, "50"))
+            if self.listaCaja[i] != self.listaCaja[0]:
+                self.listaCaja[i].configure(state='disabled')
             cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
-
-        self.listaCaja[7].bind("<FocusOut>", self.validarU)
-        self.listaCaja[8].bind("<FocusOut>", self.validarC)
-        self.listaCaja[9].bind("<FocusIn>", self.chequear_Us_Cl)
-        self.listaCaja[9].bind("<FocusOut>", self.chequear_Cl1_Cl2)
 
         #----------- BOTONES mDOS-----------
 
         for i in range(len(lista2)):
-            self.listaBoton.append(cpt.crear_B(
-                marcoDos, lista2[i], "9", comando[i]))
+            self.listaBoton.append(cpt.crear_B(marcoDos, lista2[i], "9", comando[i]))
             cpt.ordenar(self.listaBoton[i], 0, i, 1, 5)
 
-    def validarU(self, event):
-        return clv.validarUsuario(self.listaCaja)
+        #----------- ENLACES PARA LAS FUC-----------
 
-    def chequear_Us_Cl(self, event):
-        return clv.comparar_Us_Cl(self.listaCaja)
+        self.listaCaja[0].bind("<Return>", self.validarU)
+        self.listaCaja[1].bind("<Return>", self.validarC)
+        self.listaCaja[2].bind("<Return>", self.chequear_Cl1_Cl2)
+
+
+    #----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
+
+    def validarU(self,event):
+        return clv.validarUsuario(self.listaCaja)
 
     def validarC(self, event):
         return clv.validarClave(self.listaCaja)
 
     def chequear_Cl1_Cl2(self, event):
         return clv.compararClaves(self.listaCaja)
+    
+    #----------- FUNC GUARDAR, EDITAR, BORRAR----------- 
+
+    def obtenerValores(self):
+        for i in range(len(self.listaCaja)):
+            self.lista_v.append(self.listaCaja[i].get())
+        return self.lista_v
+
+    def mostrarValores(self):
+        pass
+
+    def aumentarId(self):
+        a = con.Base()
+        if  a.get_i() == 0:
+            condicion = "id_pre=2"
+        else:
+            condicion = " "
+        return condicion
+
+    def mostar(self):
+        lista_v = []
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        Conex = con.Base(lista_t, lista_v, self.aumentarId())
+        for i in range(len(lista_t)):
+            Conex.set_i(i)
+            Conex.ejecutar(Conex.mostrar())
+           
+    def guardar(self):
+        lista_v = self.obtenerValores() 
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        #conex = con.Base()
+        datos = con.Datos(lista_t, lista_v)
+        tabla = con.Tablas()
+        for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
+            datos.set_i(i)
+            tabla.ejecutar(tabla.insertar())
+            
+    def editar(self):
+        pass
+
+    def borrar(self):
+        pass
 
 # FORMULARIO DE INGRESO DE DATOS
 
 
-class registroGral():
+class RegistroGral():
 
     def __init__(self, ventana):
         self.ventana = ventana

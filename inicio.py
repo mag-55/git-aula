@@ -19,12 +19,13 @@ def abrir(valor=""):
     ventana.resizable(0, 0)
 
     if valor == "usuario":
-        regU = form.registroUsuario(ventana)
-        regU.registrarUs()
+        RegU = form.RegistroUsuario(ventana)
+        RegU.registrarUs()
     else:
-        regG = form.registroGral(ventana)
-        regG.registrarGral()
+        RegG = form.RegistroGral(ventana)
+        RegG.registrarGral()
 
 
 if __name__ == "__main__":
     iniciar()
+    
