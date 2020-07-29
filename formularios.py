@@ -102,12 +102,14 @@ class RegistroUsuario():
         self.listaBoton = []
         self.lista_v = []
         self.var = tk.StringVar()
+        self.id = 0
+
         
     def registrarUs(self):
         lista = ( "USUARIO", "CLAVE", "CONF CLAVE", "NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO",
                  "LOCALIDAD", "CP")
         lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
-        comando = [self.guardar, self.mostar, self.mostar, quit, quit, quit]
+        comando = [self.guardar, self.mostarPrevio, self.mostarSiguiente, self.editar, quit, quit]
 
         #----------- MARCO UNO Y DOS-----------
 
@@ -165,33 +167,47 @@ class RegistroUsuario():
     def mostrarValores(self):
         pass
 
-    def aumentarId(self):
-        a = con.Base()
-        if  a.get_i() == 0:
-            condicion = "id_pre=2"
-        else:
-            condicion = " "
-        return condicion
-
-    def mostar(self):
-        lista_v = []
+    def mostarPrevio(self): #ok
+        x =+ 1
+        self.id = self.id - x
         lista_t = ['preceptores', 'barrio', 'localidad']
-        Conex = con.Base(lista_t, lista_v, self.aumentarId())
+        condicion = "id = " + str(self.id)
+        datos = con.Datos(lista_t)
+        consulta = con.Consultas(datos, condicion)
         for i in range(len(lista_t)):
-            Conex.set_i(i)
-            Conex.ejecutar(Conex.mostrar())
+            datos.set_i(i)
+            consulta.ejecutar(consulta.mostrar())
+
+    def mostarSiguiente(self): #ok
+        x =+ 1
+        self.id = self.id + x
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        condicion = "id = " + str(self.id)
+        datos = con.Datos(lista_t)
+        consulta = con.Consultas(datos, condicion)
+        for i in range(len(lista_t)):
+            datos.set_i(i)
+            consulta.ejecutar(consulta.mostrar())
            
-    def guardar(self):
+    def guardar(self): #ok
         lista_v = self.obtenerValores() 
         lista_t = ['preceptores', 'barrio', 'localidad']
-        #conex = con.Base()
         datos = con.Datos(lista_t, lista_v)
-        tabla = con.Tablas()
+        consulta = con.Consultas(datos)
         for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
             datos.set_i(i)
-            tabla.ejecutar(tabla.insertar())
+            consulta.ejecutar(consulta.insertar())
             
     def editar(self):
+        lista_v = self.obtenerValores() 
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        condicion = "id = " + str(self.id)
+        datos = con.Datos(lista_t, lista_v)
+        consulta = con.Consultas(datos, condicion)
+        for i in range(len(lista_v)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
+            pos = self.lista_v.index(self.lista_v[i]) #esto pasaria la posicion 
+            datos.set_posicion(pos)
+            consulta.ejecutar(consulta.actualizar())
         pass
 
     def borrar(self):

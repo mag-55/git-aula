@@ -39,7 +39,7 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS profesores(
 	FOREIGN KEY(id_ba1) REFERENCES barrio(id_ba));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS preceptores(
-	id_pre INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	usuario TEXT,
 	clave TEXT,
 	conf_clave TEXT,
@@ -49,22 +49,22 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS preceptores(
 	fecha TEXT,
 	telefono TEXT,
 	mail TEXT, 
-	id_ba1 INTEGER,
-	id_loc1 INTEGER,
-	FOREIGN KEY(id_loc1) REFERENCES localidad(id_loc),
-	FOREIGN KEY(id_ba1) REFERENCES barrio(id_ba));""")
+	id_ba INTEGER,
+	id_loc INTEGER,
+	FOREIGN KEY(id_loc) REFERENCES localidad(id),
+	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS localidad(
-	id_loc INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	localidad TEXT,
 	CP INTEGER);""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS barrio(
-	id_ba INTEGER PRIMARY KEY AUTOINCREMENT,
-	barrio TEXT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	calle TEXT,
-	id_loc1 INTEGER,
-	FOREIGN KEY(id_loc1) REFERENCES localidad(id_loc));""")
+	barrio TEXT,
+	id_loc INTEGER,
+	FOREIGN KEY(id_loc) REFERENCES localidad(id));""")
 
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS materias(
