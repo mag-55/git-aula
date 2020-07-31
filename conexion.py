@@ -26,7 +26,7 @@ class Datos():
         #self.lista_cv = []
         #self.lista_r = []
         self.i = 0 
-        self.posicion
+        self.posicion = 0
 
     def set_i(self, i):
         self.i = i
@@ -51,20 +51,12 @@ class Datos():
         tabla = self.tabla
         b = Base()
         b.sentencia.execute('SELECT * FROM ' + tabla)
-        lista_campo = [lista[0] for lista in b.sentencia.description]
-        #print('primero:', lista_campo)
-        lista_c = []
-        for i in range(len(lista_campo)):
-            if not str(lista_campo[i]).startswith('id'):
-                lista_c.append(lista_campo[i])
-                #print(lista_campo[i])
-            elif lista_campo[0]:
-                x = lista_campo[0]
-                self.set_id(x)
-        return lista_c
+        lista = b.sentencia.description
+        lista_campo = [item[0] for item in lista if not str(item[0]).startswith('id')]
+        return lista_campo
 
     # esta func hace coincidir los valores ingresados por teclado con los campos de una tabla 
-    def igualarCampoValor(self):
+    def igualarCampoValor(self): #ok
 
         lista_c = self.obtenerCampos()
         lista_cv = []
@@ -122,7 +114,7 @@ class Consultas():
     # func mostrar, insertar, actualizar, borrar contienen las sentencias basicas de sql
     # a las que se les incluye las tabla y campos correspodientes mediantes func como cambiarTabla 
     # y obtenerCampos
-    def mostrar(self):
+    def mostrar(self): #ok
 
         tabla = self.dato.cambiarTabla()
         campos = ', '.join(self.dato.obtenerCampos())
@@ -133,7 +125,7 @@ class Consultas():
             orden = 'SELECT ' + campos + ' FROM ' + tabla + ' WHERE ' + self.condicion
         return orden
 
-    def insertar(self):
+    def insertar(self): #ok
 
         tabla = self.dato.cambiarTabla()
         campos = ', '.join(self.dato.obtenerCampos()) 
@@ -162,27 +154,27 @@ class Consultas():
     # la EJECUCION de sentencias
     def ejecutar(self, orden):
         
-        #listaV = self.dato.lista_v #PROBLEMA, ACA SE ACTUALIZA PRIMERO, NO DEBERIA ACTUALIZARSE 
         lista = self.dato.lista
         listaCV = tuple(self.dato.igualarCampoValor())
         sentencia = self.base.sentencia
         conexion = self.base.conexion
-        #id = self.dato.id
         
         # si la lista contiene elementos (Update, Insert) realiza la primera acción
         if lista:
             print(orden)
             print(listaCV)
             sentencia.execute(orden, listaCV)
+            sentencia
             conexion.commit()
         else:
+            print(orden)
             sentencia.execute(orden)
             registro = sentencia.fetchone() 
             if registro != None:
                 print(registro)
 
         if self.dato.i == len(self.dato.lista_t)-1:
-            sentencia.close() # no sigue fetchone porque el cursor se cierra
+            sentencia.close() 
             conexion.close()  
 
         

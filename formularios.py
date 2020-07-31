@@ -144,7 +144,7 @@ class RegistroUsuario():
         self.listaCaja[0].bind("<Return>", self.validarU)
         self.listaCaja[1].bind("<Return>", self.validarC)
         self.listaCaja[2].bind("<Return>", self.chequear_Cl1_Cl2)
-
+        self.listaCaja[i].bind_all("<Double-Button-1>", self.obtenerPosicion)
 
     #----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
 
@@ -159,10 +159,18 @@ class RegistroUsuario():
     
     #----------- FUNC GUARDAR, EDITAR, BORRAR----------- 
 
-    def obtenerValores(self):
+    def obtenerValores(self): #ok
         for i in range(len(self.listaCaja)):
             self.lista_v.append(self.listaCaja[i].get())
         return self.lista_v
+
+    def obtenerPosicion(self, event):
+        event.widget.delete(0, tk.END)
+        pos = str(event.widget.focus_get())
+        if pos[-1] == "y":
+            indice = "1"
+        else:
+            indice = pos[-1] 
 
     def mostrarValores(self):
         pass
