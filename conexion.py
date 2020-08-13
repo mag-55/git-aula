@@ -23,31 +23,31 @@ class Datos():
         self.id = ""
         self.tabla = ""
         self.lista_c = []
-        #self.lista_cv = []
-        #self.lista_r = []
         self.i = 0 
-        self.posicion = 0
+        self.posicion = []
 
-    def set_i(self, i):
+    def set_i(self, i): #ok
         self.i = i
     
-    def get_i(self):
+    def get_i(self): #ok
         valor = self.i
         return valor
 
-    def set_posicion(self, pos):
-        self.posicion = pos
+    def set_posicion(self, indice): #ok
+        self.posicion = indice
+        print("clase datos", self.posicion)
 
-    # def get_posicion(self):
-    #     return self.posicion
-
+    def get_posicion(self): 
+        valor = self.posicion
+        return valor
+         
     # esta func cabia de tablas en el caso de que se tenga mas de una 
-    def cambiarTabla(self):
+    def cambiarTabla(self): #ok
         self.tabla = self.lista_t[self.get_i()]
         return self.tabla
     
     # esta func obtiene una lista de campos de una tabla que se suministra sin el campo id
-    def obtenerCampos(self):
+    def obtenerCampos(self): #ok
         tabla = self.tabla
         b = Base()
         b.sentencia.execute('SELECT * FROM ' + tabla)
@@ -60,50 +60,71 @@ class Datos():
 
         lista_c = self.obtenerCampos()
         lista_cv = []
-        lista_seg = []
-        y = len(lista_c)
-        lista_seg = self.lista_v[:y]
+        longitud = len(lista_c)
+        lista_seg = self.lista_v[:longitud]
 
         for x in range(len(lista_seg)):
             x = self.lista_v.pop()
             lista_cv.append(x)
+
         return lista_cv
 
     def ubicarCampo(self, campos):
 
+        lista = []
         lista_c =  campos #tengo la lista de campos por tabla
-        longitud = len(lista_c) #tengo la longitud
-        #esto nos da la tabla en la cual trabajar
-        for i in range(len(self.lista_t)):
-            if longitud < self.posicion:
-                self.set_i(i)
-                ubicacion = longitud - self.posicion
-                self.posicion = ubicacion
-            else:
-                for i in range(len(lista_c)):
-                    #esto me da la posicion dentro de la tabla 
-                    posicionC = lista_c.index(lista_c[i])
-                    if self.posicion == posicionC:
-                        return lista_c[i] #retorna el campo
+        posicion = self.posicion #tengo la lista de posiciones
+        print("la posicion ", posicion)
 
+        for i in range(len(posicion)):
+            indice = posicion[i]
+            for i in range(len(lista_c)):
+                if lista_c.index(lista_c[i]) == indice:
+                    lista.append(lista_c[i])
+                # else:
+                #     return
+                #     como vuelvo a buscar la siguiente tabla?
+                #     como guardo la tabla segun los campos
+        print("datos lista", lista)
+        return lista
+
+    def ubicarValor(self):
+
+        lista = []
+        posicion = self.posicion
+        contenido = self.lista_v
+
+        for i in range(len(posicion)):
+            indice = posicion[i]
+            lista.append(contenido[indice])
+        
+        return lista
+        
     # esta func reemplaza los valores por signos de ? segun se requiere en ciertas sentencias sql
-    def reemplazar(self, insert='True'):
+    def reemplazarI(self): #ok
 
         campos = self.obtenerCampos()
-        lista_r = []
+        lista = []
 
-        if insert:
-            for c in range(len(campos)):
-                x = '?'
-                lista_r.append(x)
-        else:
-            c = self.ubicarCampo(campos)
-            x = c + ' = ' + '?'
-            lista_r.append(x)
-            
-        return lista_r
+        for c in range(len(campos)):
+            x = '?'
+            lista.append(x)           
+        
+        return lista
 
+    def reemplazarU(self):
 
+        campos = self.obtenerCampos()
+        listado = self.ubicarCampo(campos)
+        lista = []
+
+        for c in range(len(listado)):
+            campo = lista[c]
+            x = campo + ' = ?'
+            lista.append(x)
+        
+        return lista
+        
 class Consultas():
 
     def __init__(self, datos, condicion=''):
@@ -123,23 +144,26 @@ class Consultas():
             orden = 'SELECT ' + campos + ' FROM ' + tabla
         else:
             orden = 'SELECT ' + campos + ' FROM ' + tabla + ' WHERE ' + self.condicion
+
         return orden
 
     def insertar(self): #ok
 
         tabla = self.dato.cambiarTabla()
         campos = ', '.join(self.dato.obtenerCampos()) 
-        listado = ', '.join(self.dato.reemplazar()) 
+        listado = ', '.join(self.dato.reemplazarI()) 
 
         orden = 'INSERT INTO ' +  tabla + ' ('+ campos +') VALUES('+ listado +')'
+
         return orden
 
     def actualizar(self):
 
-        listado = ', '.join(self.dato.reemplazar(insert='False'))
         tabla = self.dato.cambiarTabla()
-
+        listado = ', '.join(self.dato.reemplazarU())
+        
         orden = 'UPDATE ' + tabla + ' SET ' + listado + ' WHERE ' + self.condicion
+
         return orden
 
     def borrar(self):
@@ -147,6 +171,7 @@ class Consultas():
         tabla = self.dato.cambiarTabla()
 
         orden = 'DELETE FROM ' + tabla + ' WHERE ' + self.condicion
+
         return orden
 
     # aqui discrimina entre la lista de valores vacia o no, segun sea para agragar datos 
@@ -156,24 +181,32 @@ class Consultas():
         
         lista = self.dato.lista
         listaCV = tuple(self.dato.igualarCampoValor())
+        listaUV = tuple(self.dato.ubicarValor())
         sentencia = self.base.sentencia
         conexion = self.base.conexion
         
         # si la lista contiene elementos (Update, Insert) realiza la primera acción
         if lista:
+
             print(orden)
             print(listaCV)
-            sentencia.execute(orden, listaCV)
-            sentencia
+
+            if orden.startswith('INSERT'):
+                sentencia.execute(orden, listaCV)
+            else:
+                sentencia.execute(orden, listaUV) #poner 2do parametro para cambiar campo
+
             conexion.commit()
         else:
-            print(orden)
-            sentencia.execute(orden)
+
+            sentencia.execute(orden) 
             registro = sentencia.fetchone() 
+
             if registro != None:
-                print(registro)
+                return registro
 
         if self.dato.i == len(self.dato.lista_t)-1:
+             
             sentencia.close() 
             conexion.close()  
 

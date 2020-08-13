@@ -7,7 +7,6 @@ import inicio as inc
 import componentes as cpt
 import claves as clv
 import conexion as con 
-#from conexion.Base import get_i
 
 # FORMULARIO DE INGRESO permite accder a la aplicación en si
 
@@ -101,8 +100,12 @@ class RegistroUsuario():
         self.listaCaja = []
         self.listaBoton = []
         self.lista_v = []
+        self.lista_va = []
         self.var = tk.StringVar()
         self.id = 0
+        self.pos = []
+        self.indice = 0
+        self.lista_f = []
 
         
     def registrarUs(self):
@@ -128,9 +131,12 @@ class RegistroUsuario():
         #----------- CAJAS mUNO-----------
 
         for i in range(len(lista)):
+
             self.listaCaja.append(cpt.crear_C(marcoUno, "50"))
+
             if self.listaCaja[i] != self.listaCaja[0]:
                 self.listaCaja[i].configure(state='disabled')
+            
             cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
 
         #----------- BOTONES mDOS-----------
@@ -160,64 +166,110 @@ class RegistroUsuario():
     #----------- FUNC GUARDAR, EDITAR, BORRAR----------- 
 
     def obtenerValores(self): #ok
+
         for i in range(len(self.listaCaja)):
             self.lista_v.append(self.listaCaja[i].get())
+
         return self.lista_v
 
-    def obtenerPosicion(self, event):
+    def obtenerPosicion(self, event): #ok
+        #ver que se haga solo dentro de marco uno!!!!
         event.widget.delete(0, tk.END)
         pos = str(event.widget.focus_get())
-        if pos[-1] == "y":
-            indice = "1"
-        else:
-            indice = pos[-1] 
 
-    def mostrarValores(self):
-        pass
+        if pos[-1] == "y":
+            indice = 1
+        elif pos[-3] == "y":
+            indice = int(pos[-2: ])
+        else:
+            indice = int(pos[-1]) 
+
+        self.pos.append(indice)
+        #ubicacion = con.Datos() #recordar crear PRIMERO EL OBJETO
+        #ubicacion.set_posicion(indice) #luego llamar a sus metodos
+        
+    def mostrarValores(self, listado): #ok
+
+        self.lista_f.extend(listado)
+
+        if len(self.lista_f) == len(self.listaCaja):
+            
+            for i in range(len(self.lista_f)):
+                self.listaCaja[i].insert(0, self.lista_f[i])
+            
+            self.lista_f = []
 
     def mostarPrevio(self): #ok
+
+        for i in range(len(self.listaCaja)):
+            self.listaCaja[i].delete(0, tk.END)
+            if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
+                self.listaCaja[i].configure(state='normal')
+
         x =+ 1
         self.id = self.id - x
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
+
         datos = con.Datos(lista_t)
+
         consulta = con.Consultas(datos, condicion)
         for i in range(len(lista_t)):
             datos.set_i(i)
             consulta.ejecutar(consulta.mostrar())
+            self.mostrarValores(listado)
 
     def mostarSiguiente(self): #ok
+
+        for i in range(len(self.listaCaja)):
+            self.listaCaja[i].delete(0, tk.END)
+            if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
+                self.listaCaja[i].configure(state='normal')
+
         x =+ 1
         self.id = self.id + x
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
+
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
+
         for i in range(len(lista_t)):
             datos.set_i(i)
-            consulta.ejecutar(consulta.mostrar())
-           
+            listado = consulta.ejecutar(consulta.mostrar())
+            self.mostrarValores(listado)
+
     def guardar(self): #ok
+
         lista_v = self.obtenerValores() 
         lista_t = ['preceptores', 'barrio', 'localidad']
+
         datos = con.Datos(lista_t, lista_v)
         consulta = con.Consultas(datos)
+
         for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
             datos.set_i(i)
             consulta.ejecutar(consulta.insertar())
             
     def editar(self):
-        lista_v = self.obtenerValores() 
+
+        lista_v = []
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
-        datos = con.Datos(lista_t, lista_v)
-        consulta = con.Consultas(datos, condicion)
-        for i in range(len(lista_v)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
-            pos = self.lista_v.index(self.lista_v[i]) #esto pasaria la posicion 
-            datos.set_posicion(pos)
-            consulta.ejecutar(consulta.actualizar())
-        pass
 
+        for i in range(len(self.pos)):
+            x = self.pos[i] - 1
+            lista_v.append(self.listaCaja[x].get())
+
+        datos = con.Datos(lista_t, lista_v)
+        datos.set_posicion(self.pos)
+        consulta = con.Consultas(datos, condicion)
+
+        for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
+            datos.set_i(i)
+            consulta.ejecutar(consulta.actualizar())
+
+    
     def borrar(self):
         pass
 
