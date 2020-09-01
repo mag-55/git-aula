@@ -185,8 +185,6 @@ class RegistroUsuario():
             indice = int(pos[-1]) 
 
         self.pos.append(indice)
-        #ubicacion = con.Datos() #recordar crear PRIMERO EL OBJETO
-        #ubicacion.set_posicion(indice) #luego llamar a sus metodos
         
     def mostrarValores(self, listado): #ok
 
@@ -216,13 +214,14 @@ class RegistroUsuario():
         consulta = con.Consultas(datos, condicion)
         for i in range(len(lista_t)):
             datos.set_i(i)
-            consulta.ejecutar(consulta.mostrar())
+            listado = consulta.ejecutar(consulta.mostrar())
             self.mostrarValores(listado)
 
     def mostarSiguiente(self): #ok
 
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
+            
             if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
@@ -250,26 +249,32 @@ class RegistroUsuario():
         for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
             datos.set_i(i)
             consulta.ejecutar(consulta.insertar())
-            
+
     def editar(self):
 
         lista_v = []
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
+        posicion = self.pos
 
         for i in range(len(self.pos)):
-            x = self.pos[i] - 1
+
+            x = posicion[i] - 1
             lista_v.append(self.listaCaja[x].get())
 
         datos = con.Datos(lista_t, lista_v)
-        datos.set_posicion(self.pos)
+        datos.set_posicion(posicion)
         consulta = con.Consultas(datos, condicion)
 
-        for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
-            datos.set_i(i)
-            consulta.ejecutar(consulta.actualizar())
+        consulta.ejecutar(consulta.actualizar())
 
-    
+        if datos.repetir:
+            
+            datos.set_i(0)
+            datos.longitud = 0
+            consulta.ejecutar(consulta.actualizar())
+            
+
     def borrar(self):
         pass
 

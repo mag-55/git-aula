@@ -4,7 +4,6 @@
 import tkinter as tk
 import formularios as form
 
-
 def iniciar():
     raiz = tk.Tk()
     raiz.resizable(0, 0)
