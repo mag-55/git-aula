@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+#!/usr/bin/python3.8
 # -*- coding: utf-8 -*-
 
 import sqlite3
@@ -199,7 +199,7 @@ class Consultas():
 
         return orden
 
-    def actualizar(self):
+    def actualizar(self): #ok
 
         listado = ', '.join(self.dato.reemplazarU())
         tabla = self.dato.cambiarTabla()
@@ -208,13 +208,19 @@ class Consultas():
 
         return orden
 
-    def borrar(self):
+    def borrar(self): #ok
 
         tabla = self.dato.cambiarTabla()
 
         orden = 'DELETE FROM ' + tabla + ' WHERE ' + self.condicion
 
         return orden
+
+    # permite saber la cantidad de registros de la tabla 
+    def contarFilas(self):
+        sentencia = self.base.sentencia
+        rows = sentencia.fetchall()
+        return len(rows)
 
     # aqui discrimina entre la lista de valores vacia o no, segun sea para agragar datos 
     # o para extraerlos con una u otra sentencia, es decir esta funcion esta dedicada a 
@@ -237,20 +243,24 @@ class Consultas():
 
                 listaUV = tuple(self.dato.ubicarValor())
                 sentencia.execute(orden, listaUV) 
-
-            conexion.commit()
-
+                
         else:
 
             sentencia.execute(orden) 
             registro = sentencia.fetchone() 
-
-            if registro != None:
-                return registro
+            return registro
+        
+        conexion.commit()
 
         if self.dato.i == len(self.dato.lista_t)-1: 
             sentencia.close() 
             conexion.close()  
+
+
+#SELECT * FROM table ORDER BY column DESC LIMIT 1
+
+
+
 
         
         

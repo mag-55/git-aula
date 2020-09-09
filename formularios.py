@@ -1,5 +1,4 @@
-
-# !/usr/local/bin/python
+# !/usr/bin/python3.8
 # -*- coding: utf-8 -*-
 
 import tkinter as tk
@@ -94,6 +93,7 @@ class Acceso():
 class RegistroUsuario():
 
     def __init__(self, ventana):
+
         self.ventana = ventana
         self.ventana.title("REGISTRO DE USUARIOS")
         self.listaEtiqueta = []
@@ -109,10 +109,11 @@ class RegistroUsuario():
 
         
     def registrarUs(self):
+
         lista = ( "USUARIO", "CLAVE", "CONF CLAVE", "NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO",
                  "LOCALIDAD", "CP")
         lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
-        comando = [self.guardar, self.mostarPrevio, self.mostarSiguiente, self.editar, quit, quit]
+        comando = [self.guardar, self.mostarPrevio, self.mostarSiguiente, self.editar, self.borrar, quit]
 
         #----------- MARCO UNO Y DOS-----------
 
@@ -125,18 +126,16 @@ class RegistroUsuario():
         #----------- ETIQUETAS mUNO-----------
 
         for i in range(len(lista)):
+
             self.listaEtiqueta.append(cpt.crear_E(marcoUno, lista[i]))
             cpt.ordenar(self.listaEtiqueta[i], i, 0, 5, 5)
 
         #----------- CAJAS mUNO-----------
 
         for i in range(len(lista)):
-
             self.listaCaja.append(cpt.crear_C(marcoUno, "50"))
-
             if self.listaCaja[i] != self.listaCaja[0]:
                 self.listaCaja[i].configure(state='disabled')
-            
             cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
 
         #----------- BOTONES mDOS-----------
@@ -144,6 +143,8 @@ class RegistroUsuario():
         for i in range(len(lista2)):
             self.listaBoton.append(cpt.crear_B(marcoDos, lista2[i], "9", comando[i]))
             cpt.ordenar(self.listaBoton[i], 0, i, 1, 5)
+        
+        self.listaBoton[1].configure(state='disabled')
 
         #----------- ENLACES PARA LAS FUC-----------
 
@@ -198,44 +199,61 @@ class RegistroUsuario():
             self.lista_f = []
 
     def mostarPrevio(self): #ok
-
+        self.listaBoton[2].configure(state='normal')
+        x =+ 1
+        self.id = self.id - x
+            
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
             if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
-        x =+ 1
-        self.id = self.id - x
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
-
         datos = con.Datos(lista_t)
-
         consulta = con.Consultas(datos, condicion)
+
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
+            if listado == None:
+                x =+ 1
+                self.id = self.id - x
+                condicion = "id = " + str(self.id)
+                consulta = con.Consultas(datos, condicion)
+                listado = consulta.ejecutar(consulta.mostrar())
+                if listado == None:
+                    self.listaBoton[1].configure(state='disabled')
+                    break
             self.mostrarValores(listado)
 
     def mostarSiguiente(self): #ok
+        self.listaBoton[1].configure(state='normal')
+        x =+ 1
+        self.id = self.id + x
 
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
-            
             if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
-        x =+ 1
-        self.id = self.id + x
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
-
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
 
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
+            if listado == None:
+                x =+ 1
+                self.id = self.id + x
+                condicion = "id = " + str(self.id)
+                consulta = con.Consultas(datos, condicion)
+                listado = consulta.ejecutar(consulta.mostrar())
+                if listado == None:
+                    self.listaBoton[2].configure(state='disabled')
+                    break
             self.mostrarValores(listado)
 
     def guardar(self): #ok
@@ -250,7 +268,7 @@ class RegistroUsuario():
             datos.set_i(i)
             consulta.ejecutar(consulta.insertar())
 
-    def editar(self):
+    def editar(self): #ok
 
         lista_v = []
         lista_t = ['preceptores', 'barrio', 'localidad']
@@ -274,9 +292,21 @@ class RegistroUsuario():
             datos.longitud = 0
             consulta.ejecutar(consulta.actualizar())
             
+    def borrar(self): #ok
 
-    def borrar(self):
-        pass
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        condicion = "id = " + str(self.id)
+        datos = con.Datos(lista_t)
+        consulta = con.Consultas(datos, condicion)
+
+        for i in range(len(lista_t)):
+            datos.set_i(i)
+            consulta.ejecutar(consulta.borrar())
+
+        for i in range(len(self.listaCaja)):
+            self.listaCaja[i].delete(0, tk.END)
+          
+    
 
 # FORMULARIO DE INGRESO DE DATOS
 
