@@ -27,7 +27,7 @@ class Datos():
         self.longitud = 0
         self.i = 0 
         self.posicion = []
-        self.repetir = False
+        self.repetir = True
 
     def set_i(self, i): #ok
         self.i = i
@@ -89,29 +89,23 @@ class Datos():
             if int(ubicacion[i]) <= self.longitud: 
 
                 if self.i != 0:
-
                     x = posicion[i] - 1
                     y = self.longitud -  catidad
                     indice = x - y
 
                 else:
-
                     indice = posicion[i] - 1
 
                 for i in range(len(campos)):
-
                     if campos.index(campos[i]) == indice:
-        
                         lista.append(campos[i])
 
         return lista
 
     def listarUbicacion(self):
-
         lista = self.ubicarCampo()
 
         while lista == []:
-
             acu =+ 1
             self.i = self.i + acu
             lista = self.ubicarCampo()
@@ -124,21 +118,19 @@ class Datos():
         contenido = self.lista_v
         
         for i in range(len(contenido)):
-
             indice = self.posicion[i] - 1
 
             if indice > self.longitud:
-
                 x = self.lista_v.index(self.lista_v[i]) - 1
                 self.lista_v.pop(x)
                 y = self.posicion.index(self.posicion[i]) - 1
                 self.posicion.pop(y)
-                self.repetir = True
                 break
             
             lista_U.append(contenido[i])
-            # x = self.lista_v.index(self.lista_v[i])
-            # self.lista_v.pop(x)
+
+        if len(self.lista_v) == 0:
+            self.repetir = False
         
         return lista_U
         
@@ -161,7 +153,6 @@ class Datos():
         lista_r = []
 
         for c in range(len(listado)):
-           
             x = listado[c] + ' = ?'
             lista_r.append(x)
         
@@ -216,12 +207,6 @@ class Consultas():
 
         return orden
 
-    # permite saber la cantidad de registros de la tabla 
-    def contarFilas(self):
-        sentencia = self.base.sentencia
-        rows = sentencia.fetchall()
-        return len(rows)
-
     # aqui discrimina entre la lista de valores vacia o no, segun sea para agragar datos 
     # o para extraerlos con una u otra sentencia, es decir esta funcion esta dedicada a 
     # la EJECUCION de sentencias
@@ -255,9 +240,6 @@ class Consultas():
         if self.dato.i == len(self.dato.lista_t)-1: 
             sentencia.close() 
             conexion.close()  
-
-
-#SELECT * FROM table ORDER BY column DESC LIMIT 1
 
 
 

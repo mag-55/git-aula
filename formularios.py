@@ -145,13 +145,15 @@ class RegistroUsuario():
             cpt.ordenar(self.listaBoton[i], 0, i, 1, 5)
         
         self.listaBoton[1].configure(state='disabled')
+        self.listaBoton[3].configure(state='disabled')
 
         #----------- ENLACES PARA LAS FUC-----------
 
         self.listaCaja[0].bind("<Return>", self.validarU)
         self.listaCaja[1].bind("<Return>", self.validarC)
         self.listaCaja[2].bind("<Return>", self.chequear_Cl1_Cl2)
-        self.listaCaja[i].bind_all("<Double-Button-1>", self.obtenerPosicion)
+        #self.listaCaja[i].bind_all("<Double-Button-1>", self.obtenerPosicion)
+        self.listaCaja[i].bind_class("Entry", "<Double-Button-1>", self.obtenerPosicion)
 
     #----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
 
@@ -175,6 +177,7 @@ class RegistroUsuario():
 
     def obtenerPosicion(self, event): #ok
         #ver que se haga solo dentro de marco uno!!!!
+        self.listaBoton[3].configure(state='normal')
         event.widget.delete(0, tk.END)
         pos = str(event.widget.focus_get())
 
@@ -224,11 +227,13 @@ class RegistroUsuario():
                 listado = consulta.ejecutar(consulta.mostrar())
                 if listado == None:
                     self.listaBoton[1].configure(state='disabled')
+                    self.listaBoton[0].configure(state='normal')
                     break
             self.mostrarValores(listado)
 
     def mostarSiguiente(self): #ok
         self.listaBoton[1].configure(state='normal')
+        self.listaBoton[0].configure(state='disable')
         x =+ 1
         self.id = self.id + x
 
@@ -276,18 +281,14 @@ class RegistroUsuario():
         posicion = self.pos
 
         for i in range(len(self.pos)):
-
             x = posicion[i] - 1
             lista_v.append(self.listaCaja[x].get())
 
         datos = con.Datos(lista_t, lista_v)
         datos.set_posicion(posicion)
         consulta = con.Consultas(datos, condicion)
-
-        consulta.ejecutar(consulta.actualizar())
-
-        if datos.repetir:
-            
+        #consulta.ejecutar(consulta.actualizar())
+        while datos.repetir:
             datos.set_i(0)
             datos.longitud = 0
             consulta.ejecutar(consulta.actualizar())
