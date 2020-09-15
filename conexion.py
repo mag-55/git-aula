@@ -1,5 +1,5 @@
-#!/usr/bin/python3.8
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
+#-*- coding: utf-8 -*-
 
 import sqlite3
 
@@ -27,7 +27,7 @@ class Datos():
         self.longitud = 0
         self.i = 0 
         self.posicion = []
-        self.repetir = True
+        self.repetido = 0
 
     def set_i(self, i): #ok
         self.i = i
@@ -116,22 +116,27 @@ class Datos():
 
         lista_U = []
         contenido = self.lista_v
-        
+        # ojo!!!! el ultimo elemento de lista_v no se elimina corregir!!!! y deberia andar
         for i in range(len(contenido)):
             indice = self.posicion[i] - 1
 
-            if indice > self.longitud:
-                x = self.lista_v.index(self.lista_v[i]) - 1
-                self.lista_v.pop(x)
-                y = self.posicion.index(self.posicion[i]) - 1
-                self.posicion.pop(y)
+            if indice >= self.longitud:
+                
+                for i in range(len(lista_U)): 
+
+                    x = self.lista_v.index(self.lista_v[i]) - i
+                    self.lista_v.pop(x)
+                    y = self.posicion.index(self.posicion[i]) - i
+                    self.posicion.pop(y)
+
                 break
             
             lista_U.append(contenido[i])
 
-        if len(self.lista_v) == 0:
-            self.repetir = False
-        
+        if len(self.posicion) == 1:
+            acu =+ 1
+            self.repetido = self.repetido + acu
+
         return lista_U
         
     # esta func reemplaza los valores por signos de ? segun se requiere en ciertas sentencias sql
@@ -238,6 +243,7 @@ class Consultas():
         conexion.commit()
 
         if self.dato.i == len(self.dato.lista_t)-1: 
+            
             sentencia.close() 
             conexion.close()  
 

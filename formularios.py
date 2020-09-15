@@ -1,5 +1,5 @@
-# !/usr/bin/python3.8
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
+#-*- coding: utf-8 -*-
 
 import tkinter as tk
 import inicio as inc
@@ -287,11 +287,20 @@ class RegistroUsuario():
         datos = con.Datos(lista_t, lista_v)
         datos.set_posicion(posicion)
         consulta = con.Consultas(datos, condicion)
-        #consulta.ejecutar(consulta.actualizar())
-        while datos.repetir:
-            datos.set_i(0)
-            datos.longitud = 0
-            consulta.ejecutar(consulta.actualizar())
+        consulta.ejecutar(consulta.actualizar())
+
+        # if datos.repetir:
+        #     datos.set_i(0)
+        #     datos.longitud = 0
+        #     consulta.ejecutar(consulta.actualizar())
+
+        while not datos.posicion == []:
+            if datos.repetido <= 1:
+                datos.set_i(0)
+                datos.longitud = 0
+                consulta.ejecutar(consulta.actualizar())
+            else:
+                datos.posicion = []
             
     def borrar(self): #ok
 
