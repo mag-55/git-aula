@@ -27,4 +27,4 @@ def abrir(valor=""):
 
 if __name__ == "__main__":
     iniciar()
-    
+

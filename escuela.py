@@ -6,7 +6,7 @@ import sqlite3
 conexion = sqlite3.connect('escuela.db')
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS alumnos(
-	id_alu INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	nombre 	TEXT,
 	apellido TEXT,
 	dni INTEGER UNIQUE,
@@ -14,18 +14,18 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS alumnos(
 	telefono TEXT,
 	mail TEXT,
 	modificado TEXT,
-	id_ba1 INTEGER,
-	id_loc1 INTEGER,
-	id_pre1 INTEGER,
-	id_curso1 INTEGER,
-	FOREIGN KEY(id_curso1) REFERENCES curso(id_curso),
-	FOREIGN KEY(id_pre1) REFERENCES preceptores(id_pre),
-	FOREIGN KEY(id_loc1) REFERENCES localidad(id_loc),
-	FOREIGN KEY(id_ba1) REFERENCES barrio(id_ba));""")
+	id_ba INTEGER,
+	id_loc INTEGER,
+	id_pre INTEGER,
+	id_curso INTEGER,
+	FOREIGN KEY(id_curso) REFERENCES curso(id),
+	FOREIGN KEY(id_pre) REFERENCES preceptores(id),
+	FOREIGN KEY(id_loc) REFERENCES localidad(id),
+	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
 	
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS profesores(
-	id_prof INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	nombre TEXT,
 	apellido TEXT,
 	dni INTEGER UNIQUE,
@@ -33,10 +33,10 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS profesores(
 	telefono TEXT,
 	mail TEXT,
 	modificado TEXT,
-	id_ba1 INTEGER,
-	id_loc1 INTEGER,
-	FOREIGN KEY(id_loc1) REFERENCES localidad(id_loc),
-	FOREIGN KEY(id_ba1) REFERENCES barrio(id_ba));""")
+	id_ba INTEGER,
+	id_loc INTEGER,
+	FOREIGN KEY(id_loc) REFERENCES localidad(id),
+	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS preceptores(
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -66,62 +66,61 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS barrio(
 	id_loc INTEGER,
 	FOREIGN KEY(id_loc) REFERENCES localidad(id));""")
 
-
 conexion.execute("""CREATE TABLE IF NOT EXISTS materias(
-	id_mat INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	asignatura TEXT,
-	id_curso1 INTEGER,
-	FOREIGN KEY(id_curso1) REFERENCES curso(id_curso));""")
+	id_curso INTEGER,
+	FOREIGN KEY(id_curso) REFERENCES curso(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS notas(
-	id_nota INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	calific INTEGER(2));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS curso(
-	id_curso INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	anio TEXT);""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS division(
-	id_div INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	seccion TEXT,
-	id_curso1 INTEGER,
-	FOREIGN KEY(id_curso1) REFERENCES curso(id_curso));""")
+	id_curso INTEGER,
+	FOREIGN KEY(id_curso) REFERENCES curso(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS turno(
-	id_turno INTEGER PRIMARY KEY AUTOINCREMENT,
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
 	mt TEXT,
-	id_curso1 INTEGER,
-	FOREIGN KEY(id_curso1) REFERENCES curso(id_curso));""")
+	id_curso INTEGER,
+	FOREIGN KEY(id_curso) REFERENCES curso(id));""")
 
 # ------------------------------------------------------- #
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS alum_prof(
-	id_alum_prof INTEGER PRIMARY KEY AUTOINCREMENT,
-	id_alu1 INTEGER,
-	id_prof1 INTEGER,
-	FOREIGN KEY(id_alu1) REFERENCES alumnos(id_alu),
-	FOREIGN KEY(id_prof1) REFERENCES profesores(id_prof));""")
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_alu INTEGER,
+	id_prof INTEGER,
+	FOREIGN KEY(id_alu) REFERENCES alumnos(id),
+	FOREIGN KEY(id_prof) REFERENCES profesores(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS alum_mat(
-	id_alum_mat INTEGER PRIMARY KEY AUTOINCREMENT,
-	id_alu1 INTEGER,
-	id_mat1 INTEGER,
-	FOREIGN KEY(id_alu1) REFERENCES alumnos(id_alu),
-	FOREIGN KEY(id_mat1) REFERENCES materias(id_mat));""")
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_alu INTEGER,
+	id_mat INTEGER,
+	FOREIGN KEY(id_alu) REFERENCES alumnos(id),
+	FOREIGN KEY(id_mat) REFERENCES materias(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS prof_mat(
-	id_prof_mat INTEGER PRIMARY KEY AUTOINCREMENT,
-	id_prof1 INTEGER,
-	id_mat1 INTEGER,
-	FOREIGN KEY(id_prof1) REFERENCES profesores(id_prof),
-	FOREIGN KEY(id_mat1) REFERENCES materias(id_mat));""")
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_prof INTEGER,
+	id_mat INTEGER,
+	FOREIGN KEY(id_prof) REFERENCES profesores(id),
+	FOREIGN KEY(id_mat) REFERENCES materias(id));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS mat_nota(
-	id_mat_nota INTEGER PRIMARY KEY AUTOINCREMENT,
-	id_mat1 INTEGER,
-	id_nota1 INTEGER,
-	FOREIGN KEY(id_mat1) REFERENCES materias(id_mat),
-	FOREIGN KEY(id_nota1) REFERENCES notas(id_nota));""")
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_mat INTEGER,
+	id_nota INTEGER,
+	FOREIGN KEY(id_mat) REFERENCES materias(id),
+	FOREIGN KEY(id_nota) REFERENCES notas(id));""")
 
 conexion.close()
 

@@ -289,11 +289,6 @@ class RegistroUsuario():
         consulta = con.Consultas(datos, condicion)
         consulta.ejecutar(consulta.actualizar())
 
-        # if datos.repetir:
-        #     datos.set_i(0)
-        #     datos.longitud = 0
-        #     consulta.ejecutar(consulta.actualizar())
-
         while not datos.posicion == []:
             if datos.repetido <= 1:
                 datos.set_i(0)

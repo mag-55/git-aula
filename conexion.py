@@ -236,9 +236,10 @@ class Consultas():
                 
         else:
 
-            sentencia.execute(orden) 
-            registro = sentencia.fetchone() 
-            return registro
+            sentencia.execute(orden)
+            if orden.startswith('SELECT'): 
+                registro = sentencia.fetchone() 
+                return registro
         
         conexion.commit()
 
