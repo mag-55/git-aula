@@ -152,7 +152,6 @@ class RegistroUsuario():
         self.listaCaja[0].bind("<Return>", self.validarU)
         self.listaCaja[1].bind("<Return>", self.validarC)
         self.listaCaja[2].bind("<Return>", self.chequear_Cl1_Cl2)
-        #self.listaCaja[i].bind_all("<Double-Button-1>", self.obtenerPosicion)
         self.listaCaja[i].bind_class("Entry", "<Double-Button-1>", self.obtenerPosicion)
 
     #----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
@@ -176,7 +175,7 @@ class RegistroUsuario():
         return self.lista_v
 
     def obtenerPosicion(self, event): #ok
-        #ver que se haga solo dentro de marco uno!!!!
+
         self.listaBoton[3].configure(state='normal')
         event.widget.delete(0, tk.END)
         pos = str(event.widget.focus_get())
@@ -290,12 +289,9 @@ class RegistroUsuario():
         consulta.ejecutar(consulta.actualizar())
 
         while not datos.posicion == []:
-            if datos.repetido <= 1:
-                datos.set_i(0)
-                datos.longitud = 0
-                consulta.ejecutar(consulta.actualizar())
-            else:
-                datos.posicion = []
+            datos.set_i(0)
+            datos.longitud = 0
+            consulta.ejecutar(consulta.actualizar())
             
     def borrar(self): #ok
 
@@ -311,7 +307,6 @@ class RegistroUsuario():
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
           
-    
 
 # FORMULARIO DE INGRESO DE DATOS
 
