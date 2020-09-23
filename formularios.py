@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import tkinter as tk
 import inicio as inc
@@ -18,14 +18,14 @@ class Acceso():
         self.listaBoton = []
         self.listaEtiqueta = []
 
-    #----------- VENTANA ACCESO -----------
+    # ----------- VENTANA ACCESO -----------
 
     def acceder(self):
         lista = ("USUARIO:", "CLAVE:")
         lista2 = ("ENTRAR", "SALIR")
         comando = [self.chequear, quit]
 
-        #----------- MARCO CERO, UNO Y DOS-----------
+        # ----------- MARCO CERO, UNO Y DOS-----------
 
         marcoCero = cpt.crear_M(self.raiz, "400", "100")
         cpt.ordenar(marcoCero, 0, 0)
@@ -36,13 +36,13 @@ class Acceso():
         marcoDos = cpt.crear_M(self.raiz, "400", "50")
         cpt.ordenar(marcoDos, 2, 0)
 
-        #----------- ETIQUETA mUNO-----------
+        # ----------- ETIQUETA mUNO-----------
 
         titulo = cpt.crear_E(marcoCero, "Ingrese su Usuario")
         titulo.configure(font="15")
         cpt.ordenar(titulo, 0, 0, 5, 10)
 
-        #----------- CAJAS TEXTO mUNO-----------
+        # ----------- CAJAS TEXTO mUNO-----------
 
         for i in range(len(lista)):
             self.listaCaja.append(cpt.crear_C(marcoUno, "40"))
@@ -54,14 +54,14 @@ class Acceso():
         self.listaCaja[1].bind("<Button-1>", self.limpiar)
         self.listaCaja[1].bind("<FocusIn>", self.enmascarar)
 
-        #----------- ETIQUETA mUNO-----------
+        # ----------- ETIQUETA mUNO-----------
 
         crearUs = cpt.crear_E(marcoUno, "Crear nuevo usuario")
         crearUs.configure(foreground="#ff5733", font=("arial", 8, "bold"))
         cpt.ordenar(crearUs, 2, 0, 5, 0, "w")
         crearUs.bind("<Button-1>", self.registrar)
 
-        #----------- BOTONES mDOS-----------
+        # ----------- BOTONES mDOS-----------
 
         for i in range(len(lista2)):
             self.listaBoton.append(cpt.crear_B(
@@ -77,12 +77,10 @@ class Acceso():
         self.listaCaja[1].configure(show="*")
 
     def registrar(self, event):
-        valor = "usuario"
-        inc.abrir(valor)
+        return clv.chequear_a(self.raiz, self.listaCaja)
 
     def chequear(self):
-        # self.raiz.withdraw()
-        return clv.chequear(self.listaCaja)
+        return clv.chequear_u(self.listaCaja)
 
     def cerrar(self):
         self.raiz.destroy()
@@ -93,29 +91,28 @@ class Acceso():
 class RegistroUsuario():
 
     def __init__(self, ventana):
-
         self.ventana = ventana
         self.ventana.title("REGISTRO DE USUARIOS")
         self.listaEtiqueta = []
         self.listaCaja = []
         self.listaBoton = []
         self.lista_v = []
-        self.lista_va = []
-        self.var = tk.StringVar()
+        # self.lista_va = []
+        # self.var = tk.StringVar()
         self.id = 0
         self.pos = []
         self.indice = 0
         self.lista_f = []
 
-        
+    # ----------- VENTANA REGISTRO DE USUARIO -----------
+
     def registrarUs(self):
 
-        lista = ( "USUARIO", "CLAVE", "CONF CLAVE", "NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO",
-                 "LOCALIDAD", "CP")
+        lista = ("USUARIO", "CLAVE", "CONF CLAVE", "NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO", "LOCALIDAD", "CP")
         lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
-        comando = [self.guardar, self.mostarPrevio, self.mostarSiguiente, self.editar, self.borrar, quit]
+        comando = [self.guardar, self.mostarPrevio, self.mostarSiguiente, self.editar, self.borrar, self.salirFormulario]
 
-        #----------- MARCO UNO Y DOS-----------
+        # ----------- MARCO UNO Y DOS-----------
 
         marcoUno = cpt.crear_M(self.ventana, "500",  "400")
         cpt.ordenar(marcoUno, 0, 0)
@@ -123,14 +120,14 @@ class RegistroUsuario():
         marcoDos = cpt.crear_M(self.ventana, "500", "50")
         cpt.ordenar(marcoDos, 1, 0)
 
-        #----------- ETIQUETAS mUNO-----------
+        # ----------- ETIQUETAS mUNO-----------
 
         for i in range(len(lista)):
 
             self.listaEtiqueta.append(cpt.crear_E(marcoUno, lista[i]))
             cpt.ordenar(self.listaEtiqueta[i], i, 0, 5, 5)
 
-        #----------- CAJAS mUNO-----------
+        # ----------- CAJAS mUNO-----------
 
         for i in range(len(lista)):
             self.listaCaja.append(cpt.crear_C(marcoUno, "50"))
@@ -138,7 +135,7 @@ class RegistroUsuario():
                 self.listaCaja[i].configure(state='disabled')
             cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
 
-        #----------- BOTONES mDOS-----------
+        # ----------- BOTONES mDOS-----------
 
         for i in range(len(lista2)):
             self.listaBoton.append(cpt.crear_B(marcoDos, lista2[i], "9", comando[i]))
@@ -147,16 +144,22 @@ class RegistroUsuario():
         self.listaBoton[1].configure(state='disabled')
         self.listaBoton[3].configure(state='disabled')
 
-        #----------- ENLACES PARA LAS FUC-----------
+        # ----------- ENLACES PARA LAS FUC-----------
 
         self.listaCaja[0].bind("<Return>", self.validarU)
         self.listaCaja[1].bind("<Return>", self.validarC)
         self.listaCaja[2].bind("<Return>", self.chequear_Cl1_Cl2)
         self.listaCaja[i].bind_class("Entry", "<Double-Button-1>", self.obtenerPosicion)
 
-    #----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
+    # ----------- FUNC SALIDA DEL FORMULARIO-----------
 
-    def validarU(self,event):
+    def salirFormulario (self):
+        self.ventana.destroy()
+        inc.iniciar()
+
+    # ----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
+
+    def validarU(self, event):
         return clv.validarUsuario(self.listaCaja)
 
     def validarC(self, event):
@@ -165,7 +168,7 @@ class RegistroUsuario():
     def chequear_Cl1_Cl2(self, event):
         return clv.compararClaves(self.listaCaja)
     
-    #----------- FUNC GUARDAR, EDITAR, BORRAR----------- 
+    # ----------- FUNC GUARDAR, EDITAR, BORRAR-----------
 
     def obtenerValores(self): #ok
 
@@ -200,14 +203,14 @@ class RegistroUsuario():
             
             self.lista_f = []
 
-    def mostarPrevio(self): #ok
+    def mostarPrevio(self):  # ok
         self.listaBoton[2].configure(state='normal')
         x =+ 1
         self.id = self.id - x
             
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
-            if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
+            if self.listaCaja[i] != self.listaCaja[0]:  # VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
         lista_t = ['preceptores', 'barrio', 'localidad']
@@ -230,7 +233,7 @@ class RegistroUsuario():
                     break
             self.mostrarValores(listado)
 
-    def mostarSiguiente(self): #ok
+    def mostarSiguiente(self):  # ok
         self.listaBoton[1].configure(state='normal')
         self.listaBoton[0].configure(state='disable')
         x =+ 1
@@ -260,7 +263,7 @@ class RegistroUsuario():
                     break
             self.mostrarValores(listado)
 
-    def guardar(self): #ok
+    def guardar(self):  # ok
 
         lista_v = self.obtenerValores() 
         lista_t = ['preceptores', 'barrio', 'localidad']
@@ -268,11 +271,11 @@ class RegistroUsuario():
         datos = con.Datos(lista_t, lista_v)
         consulta = con.Consultas(datos)
 
-        for i in range(len(lista_t)): #de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
+        for i in range(len(lista_t)):  # de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
             datos.set_i(i)
             consulta.ejecutar(consulta.insertar())
 
-    def editar(self): #ok
+    def editar(self):  # ok
 
         lista_v = []
         lista_t = ['preceptores', 'barrio', 'localidad']
@@ -292,8 +295,10 @@ class RegistroUsuario():
             datos.set_i(0)
             datos.longitud = 0
             consulta.ejecutar(consulta.actualizar())
+
+        clv.op_exitosa()
             
-    def borrar(self): #ok
+    def borrar(self):  # ok
 
         lista_t = ['preceptores', 'barrio', 'localidad']
         condicion = "id = " + str(self.id)
@@ -335,10 +340,8 @@ class RegistroGral():
         self.mostrarMaterias()
 
     def registrarGral(self):
-        lista = ("SELECCIONE UNA OPCION", "PROFESORES",
-                 "ALUMNOS", "CURSOS", "MATERIAS")
-        lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE",
-                  "EDITAR", "BORRAR", "SALIR")
+        lista = ("SELECCIONE UNA OPCION", "PROFESORES", "ALUMNOS", "CURSOS", "MATERIAS")
+        lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
         listaBoton = []
         comando = quit
         seleccion = self.ventana.register(self.capturar)
@@ -381,8 +384,7 @@ class RegistroGral():
     def mostrarProfesor(self):
         listaEtiqueta = []
         listaCaja = []
-        lista = ("NOMBRE", "APELLIDO", "DNI",
-                 "FECHA", "DIRECCION", "TEL", "MAIL")
+        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL", "MAIL")
 
         for i in range(len(lista)):
             listaEtiqueta.append(cpt.crear_E(self.marcoDos, lista[i]))
@@ -395,8 +397,7 @@ class RegistroGral():
     def mostrarAlumnos(self):
         listaEtiqueta = []
         listaCaja = []
-        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL",
-                 "PADRE", "TRABAJO", "TEL", "MADRE", "TRABAJO", "TEL", "MAIL", "CURSO")
+        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL", "PADRE", "TRABAJO", "TEL", "MADRE", "TRABAJO", "TEL", "MAIL", "CURSO")
 
         for i in range(len(lista)):
             listaEtiqueta.append(cpt.crear_E(self.marcoTres, lista[i]))

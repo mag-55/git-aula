@@ -2,14 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
+from tkinter import messagebox
 
 
 class Base():
 
     def __init__(self):
-        self.base = 'escuela.db'
-        self.conexion = sqlite3.connect(self.base)
-        self.sentencia = self.conexion.cursor()
+        try:
+            self.base = 'escuela.db'
+            self.conexion = sqlite3.connect(self.base)
+            # self.sentencia = self.conexion.cursor()
+            # self.conexion.rollback(self)
+        except sqlite3.Error as e:
+            messagebox.showerror(title="ERROR!", message=str(e))
 
 
 class Datos():
@@ -54,8 +59,10 @@ class Datos():
 
         tabla = self.cambiarTabla()
         b = Base()
-        b.sentencia.execute('SELECT * FROM ' + tabla)
-        lista = b.sentencia.description
+        lista = b.conexion.execute('SELECT * FROM ' + tabla).description
+        #b.conexion.execute('SELECT * FROM ' + tabla)
+        #b.sentencia.execute('SELECT * FROM ' + tabla)
+        #lista = b.sentencia.description
 
         lista_campo = [item[0] for item in lista if not str(item[0]).startswith('id')]
 
@@ -117,7 +124,7 @@ class Datos():
         lista_U = []
         longitud_P = len(self.copiar_posicion())
         contenido = self.lista_v
-        # ojo!!!! el ultimo elemento de lista_v no se elimina corregir!!!! y deberia andar
+
         for i in range(len(contenido)):
             indice = self.posicion[i] - 1
 
@@ -137,10 +144,6 @@ class Datos():
 
         if longitud_U == longitud_P:
             self.posicion = []
-
-        #if len(self.posicion) == 1:
-         #   acu = + 1
-          #  self.repetido = self.repetido + acu
 
         return lista_U
 
@@ -223,7 +226,7 @@ class Consultas():
     def ejecutar(self, orden):
 
         lista = self.dato.lista
-        sentencia = self.base.sentencia
+        sentencia = self.base.conexion.cursor()
         conexion = self.base.conexion
 
         # si la lista contiene elementos (Update, Insert) realiza la primera acción
