@@ -4,6 +4,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import inicio as inc
+import conexion as con
 
 """
 Este modulo cuntiene distintas func para chequear ek ingreso de
@@ -14,7 +15,8 @@ y eliminación de rigistros todo requerido por las clases de formulario.py
 # CHEQUEO DE INGRESO DE USUARIOS AL SISTEMA
 
 
-def chequear_a(raiz, lista):  # chequea que el usuario sea el administrador para poder generar usuarios
+# chequea que el usuario sea el administrador para poder generar usuarios
+def chequear_a(raiz, lista):
     if lista[0].get() == "adm" and lista[1].get() == "gral":
         raiz.iconify()
         valor = "usuario"
@@ -26,12 +28,17 @@ def chequear_a(raiz, lista):  # chequea que el usuario sea el administrador para
         lista[0].focus()
 
 
-def chequear_u(lista):  # chequea que el usuario uno de los ya creados por el administrador
-    if lista[0].get() == "adm" and lista[1].get() == "gral":
+# chequea que el usuario uno de los ya creados por el administrador
+def chequear_u(lista):
+    # if lista[0].get() == "adm" and lista[1].get() == "gral":
+    usuario = lista[0].get()
+    clave = lista[1].get()
+    conn = con.Datos()
+    respuesta = conn.comp_us_clv(usuario, clave)
+    if respuesta is True:
         inc.abrir()
     else:
-        messagebox.showwarning(
-            title="DENEGADO!", message="Su autenticación es Incorrecta")
+        messagebox.showwarning(title="DENEGADO!", message="Su autenticación es Incorrecta")
         lista[0].delete(0, tk.END)
         lista[0].focus()
 

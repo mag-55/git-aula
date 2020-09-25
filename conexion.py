@@ -11,10 +11,8 @@ class Base():
         try:
             self.base = 'escuela.db'
             self.conexion = sqlite3.connect(self.base)
-            # self.sentencia = self.conexion.cursor()
-            # self.conexion.rollback(self)
-        except sqlite3.Error as e:
-            messagebox.showerror(title="ERROR!", message=str(e))
+        except sqlite3.OperationalError as e:
+            messagebox.showerror(title="ERROR!", message=e)
 
 
 class Datos():
@@ -60,10 +58,6 @@ class Datos():
         tabla = self.cambiarTabla()
         b = Base()
         lista = b.conexion.execute('SELECT * FROM ' + tabla).description
-        #b.conexion.execute('SELECT * FROM ' + tabla)
-        #b.sentencia.execute('SELECT * FROM ' + tabla)
-        #lista = b.sentencia.description
-
         lista_campo = [item[0] for item in lista if not str(item[0]).startswith('id')]
 
         return lista_campo
@@ -170,6 +164,31 @@ class Datos():
 
         return lista_r
 
+    def comp_us_clv(self, usuario, clave):
+
+        db = Base()
+        consulta = 'SELECT COUNT(usuario) FROM preceptores'
+        sentencia = db.conexion.cursor()
+        sentencia.execute(consulta)
+        longitud = sentencia.fetchone()[0]
+        valor = False
+
+        for i in range(longitud):
+
+            consulta1 = 'SELECT usuario FROM preceptores WHERE id={}'.format(i+1)
+            sentencia.execute(consulta1)
+            usr = sentencia.fetchone()
+            usuario_t = str(usr[0])
+            consulta2 = 'SELECT clave FROM preceptores WHERE id={}'.format(i+1)
+            sentencia.execute(consulta2)
+            clv = sentencia.fetchone()
+            clave_t = str(clv[0])
+
+            if usuario_t == usuario and clave_t == clave:
+                valor = True
+
+        return valor
+
 
 class Consultas():
 
@@ -224,33 +243,42 @@ class Consultas():
     # o para extraerlos con una u otra sentencia, es decir esta funcion esta dedicada a 
     # la EJECUCION de sentencias
     def ejecutar(self, orden):
+        try:
+            lista = self.dato.lista
+            sentencia = self.base.conexion.cursor()
+            conexion = self.base.conexion
 
-        lista = self.dato.lista
-        sentencia = self.base.conexion.cursor()
-        conexion = self.base.conexion
+            # si la lista contiene elementos (Update, Insert) realiza la primera acción
+            if lista:
 
-        # si la lista contiene elementos (Update, Insert) realiza la primera acción
-        if lista:
+                if orden.startswith('INSERT'):
 
-            if orden.startswith('INSERT'):
+                    listaCV = tuple(self.dato.igualarCampoValor())
+                    sentencia.execute(orden, listaCV)
 
-                listaCV = tuple(self.dato.igualarCampoValor())
-                sentencia.execute(orden, listaCV)
+                else:
+
+                    listaUV = tuple(self.dato.ubicarValor())
+                    sentencia.execute(orden, listaUV)
 
             else:
 
-                listaUV = tuple(self.dato.ubicarValor())
-                sentencia.execute(orden, listaUV)
+                sentencia.execute(orden)
+                if orden.startswith('SELECT'):
+                    registro = sentencia.fetchone()
+                    return registro
 
-        else:
+            conexion.commit()
 
-            sentencia.execute(orden)
-            if orden.startswith('SELECT'):
-                registro = sentencia.fetchone()
-                return registro
+        except sqlite3.ProgrammingError as e:
+            messagebox.showerror(title="ERROR!", message=e)
+            conexion.rollback()
 
-        conexion.commit()
+        except sqlite3.OperationalError as e:
+            messagebox.showerror(title="ERROR!", message=e)
+            conexion.rollback()
 
-        if self.dato.i == len(self.dato.lista_t) - 1:
-            sentencia.close()
-            conexion.close()
+        finally:
+            if self.dato.i == len(self.dato.lista_t) - 1:
+                sentencia.close()
+                conexion.close()

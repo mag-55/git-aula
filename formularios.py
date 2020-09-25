@@ -23,18 +23,18 @@ class Acceso():
     def acceder(self):
         lista = ("USUARIO:", "CLAVE:")
         lista2 = ("ENTRAR", "SALIR")
-        comando = [self.chequear, quit]
+        comando = [self.chequear, self.cerrar]
 
         # ----------- MARCO CERO, UNO Y DOS-----------
 
         marcoCero = cpt.crear_M(self.raiz, "400", "100")
         cpt.ordenar(marcoCero, 0, 0)
 
-        marcoUno = cpt.crear_M(self.raiz, "400", "100")
-        cpt.ordenar(marcoUno, 1, 0)
+        marco_uno = cpt.crear_M(self.raiz, "400", "100")
+        cpt.ordenar(marco_uno, 1, 0)
 
-        marcoDos = cpt.crear_M(self.raiz, "400", "50")
-        cpt.ordenar(marcoDos, 2, 0)
+        marco_dos = cpt.crear_M(self.raiz, "400", "50")
+        cpt.ordenar(marco_dos, 2, 0)
 
         # ----------- ETIQUETA mUNO-----------
 
@@ -45,7 +45,7 @@ class Acceso():
         # ----------- CAJAS TEXTO mUNO-----------
 
         for i in range(len(lista)):
-            self.listaCaja.append(cpt.crear_C(marcoUno, "40"))
+            self.listaCaja.append(cpt.crear_C(marco_uno, "40"))
             self.listaCaja[i].insert(0, lista[i])
             self.listaCaja[i].configure(foreground="gray")
             cpt.ordenar(self.listaCaja[i], i, 0, 5, 5)
@@ -56,7 +56,7 @@ class Acceso():
 
         # ----------- ETIQUETA mUNO-----------
 
-        crearUs = cpt.crear_E(marcoUno, "Crear nuevo usuario")
+        crearUs = cpt.crear_E(marco_uno, "Crear nuevo usuario")
         crearUs.configure(foreground="#ff5733", font=("arial", 8, "bold"))
         cpt.ordenar(crearUs, 2, 0, 5, 0, "w")
         crearUs.bind("<Button-1>", self.registrar)
@@ -64,8 +64,7 @@ class Acceso():
         # ----------- BOTONES mDOS-----------
 
         for i in range(len(lista2)):
-            self.listaBoton.append(cpt.crear_B(
-                marcoDos, lista2[i], "10", comando[i]))
+            self.listaBoton.append(cpt.crear_B(marco_dos, lista2[i], "10", comando[i]))
             cpt.ordenar(self.listaBoton[i], 0, i, 5, 5)
 
     def limpiar(self, event):
@@ -83,7 +82,7 @@ class Acceso():
         return clv.chequear_u(self.listaCaja)
 
     def cerrar(self):
-        self.raiz.destroy()
+        quit()
 
 # FORMULARIO DE REGISTRO DE NUEVO USUARIO
 
@@ -97,12 +96,11 @@ class RegistroUsuario():
         self.listaCaja = []
         self.listaBoton = []
         self.lista_v = []
-        # self.lista_va = []
-        # self.var = tk.StringVar()
         self.id = 0
         self.pos = []
         self.indice = 0
         self.lista_f = []
+        self.caja_buscar = ""
 
     # ----------- VENTANA REGISTRO DE USUARIO -----------
 
@@ -114,31 +112,45 @@ class RegistroUsuario():
 
         # ----------- MARCO UNO Y DOS-----------
 
-        marcoUno = cpt.crear_M(self.ventana, "500",  "400")
-        cpt.ordenar(marcoUno, 0, 0)
+        marco_uno = cpt.crear_M(self.ventana, "500",  "400")
+        cpt.ordenar(marco_uno, 0, 0)
+        
+        marco_buscar = cpt.crear_M(self.ventana, "500", "50")
+        cpt.ordenar(marco_buscar, 1, 0)
 
-        marcoDos = cpt.crear_M(self.ventana, "500", "50")
-        cpt.ordenar(marcoDos, 1, 0)
+        marco_dos = cpt.crear_M(self.ventana, "500", "50")
+        cpt.ordenar(marco_dos, 2, 0)
 
         # ----------- ETIQUETAS mUNO-----------
 
         for i in range(len(lista)):
 
-            self.listaEtiqueta.append(cpt.crear_E(marcoUno, lista[i]))
+            self.listaEtiqueta.append(cpt.crear_E(marco_uno, lista[i]))
             cpt.ordenar(self.listaEtiqueta[i], i, 0, 5, 5)
 
         # ----------- CAJAS mUNO-----------
 
         for i in range(len(lista)):
-            self.listaCaja.append(cpt.crear_C(marcoUno, "50"))
+            self.listaCaja.append(cpt.crear_C(marco_uno, "50"))
             if self.listaCaja[i] != self.listaCaja[0]:
                 self.listaCaja[i].configure(state='disabled')
             cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
 
+        # ----------- CAJA-BUSCAR mBUSCAR-----------
+
+        self.caja_buscar = cpt.crear_C(marco_buscar, "20")
+        self.caja_buscar.insert(0, "Ingrese DNI:")
+        self.caja_buscar.configure(foreground="gray")
+        cpt.ordenar(self.caja_buscar, 0, 1, 1, 1)
+        self.caja_buscar.bind("<FocusIn>", self.limpiar)
+
+        boton_buscar = cpt.crear_B(marco_buscar, "Buscar", "9", self.buscar)
+        cpt.ordenar(boton_buscar, 0, 2, 1, 1)
+
         # ----------- BOTONES mDOS-----------
 
         for i in range(len(lista2)):
-            self.listaBoton.append(cpt.crear_B(marcoDos, lista2[i], "9", comando[i]))
+            self.listaBoton.append(cpt.crear_B(marco_dos, lista2[i], "9", comando[i]))
             cpt.ordenar(self.listaBoton[i], 0, i, 1, 5)
         
         self.listaBoton[1].configure(state='disabled')
@@ -153,9 +165,15 @@ class RegistroUsuario():
 
     # ----------- FUNC SALIDA DEL FORMULARIO-----------
 
-    def salirFormulario (self):
+    def salirFormulario (self): # VER ESTO NO SE COMPORTA COMO DEBERIA!!!!
         self.ventana.destroy()
         inc.iniciar()
+
+    # ----------- FUNC LIMPIAR CAJA BUSCAR-----------
+
+    def limpiar(self, event):
+        event.widget.delete(0, tk.END)
+        return None
 
     # ----------- FUNC VALIDA USUARIO Y CLAVE(tabién verifica us != cl y cl == ccl)-----------
 
@@ -205,7 +223,7 @@ class RegistroUsuario():
 
     def mostarPrevio(self):  # ok
         self.listaBoton[2].configure(state='normal')
-        x =+ 1
+        x = + 1
         self.id = self.id - x
             
         for i in range(len(self.listaCaja)):
@@ -221,13 +239,13 @@ class RegistroUsuario():
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
-            if listado == None:
-                x =+ 1
+            if listado is None:
+                x = + 1
                 self.id = self.id - x
                 condicion = "id = " + str(self.id)
                 consulta = con.Consultas(datos, condicion)
                 listado = consulta.ejecutar(consulta.mostrar())
-                if listado == None:
+                if listado is None:
                     self.listaBoton[1].configure(state='disabled')
                     self.listaBoton[0].configure(state='normal')
                     break
@@ -236,12 +254,12 @@ class RegistroUsuario():
     def mostarSiguiente(self):  # ok
         self.listaBoton[1].configure(state='normal')
         self.listaBoton[0].configure(state='disable')
-        x =+ 1
+        x = + 1
         self.id = self.id + x
 
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
-            if self.listaCaja[i] != self.listaCaja[0]: #VER SOLUCIONAR ESTE DETALLE
+            if self.listaCaja[i] != self.listaCaja[0]:  # VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
         lista_t = ['preceptores', 'barrio', 'localidad']
@@ -252,13 +270,13 @@ class RegistroUsuario():
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
-            if listado == None:
-                x =+ 1
+            if listado is None:
+                x = + 1
                 self.id = self.id + x
                 condicion = "id = " + str(self.id)
                 consulta = con.Consultas(datos, condicion)
                 listado = consulta.ejecutar(consulta.mostrar())
-                if listado == None:
+                if listado is None:
                     self.listaBoton[2].configure(state='disabled')
                     break
             self.mostrarValores(listado)
@@ -311,6 +329,21 @@ class RegistroUsuario():
 
         for i in range(len(self.listaCaja)):
             self.listaCaja[i].delete(0, tk.END)
+
+    # ----------- FUNC BUSCAR DNI-----------
+
+    def buscar(self):
+        # tengo que hacer todas las busquedas mediante id para que pueda pasar a las distintas tablas
+        valor = self.caja_buscar.get()
+        lista_t = ['preceptores', 'barrio', 'localidad']
+        condicion = "id IN (SELECT dni FROM preceptores WHERE dni=" + valor + ")"
+        datos = con.Datos(lista_t)
+        consulta = con.Consultas(datos, condicion)
+
+        for i in range(len(lista_t)):
+            datos.set_i(i)
+            listado = consulta.ejecutar(consulta.mostrar())
+            self.mostrarValores(listado)
           
 
 # FORMULARIO DE INGRESO DE DATOS
@@ -324,8 +357,8 @@ class RegistroGral():
         self.list_spin = None
         self.marcoSpin = cpt.crear_M(self.ventana, "500", "50")
         cpt.ordenar(self.marcoSpin, 0, 0)
-        self.marcoDos = cpt.crear_M(self.ventana, "500", "0")
-        self.ocultar(self.marcoDos)
+        self.marco_dos = cpt.crear_M(self.ventana, "500", "0")
+        self.ocultar(self.marco_dos)
         self.marcoTres = cpt.crear_M(self.ventana, "500", "0")
         self.ocultar(self.marcoTres)
         self.marcoCuatro = cpt.crear_M(self.ventana, "500", "0")
@@ -366,9 +399,9 @@ class RegistroGral():
 
         if captura == "PROFESORES":
             self.ocultar(self.marcoTres)
-            self.mostar(self.marcoDos)
+            self.mostar(self.marco_dos)
         elif captura == "ALUMNOS":
-            self.ocultar(self.marcoDos)
+            self.ocultar(self.marco_dos)
             self.ocultar(self.marcoCuatro)
             self.mostar(self.marcoTres)
         elif captura == "CURSOS":
@@ -379,7 +412,7 @@ class RegistroGral():
             self.ocultar(self.marcoCuatro)
             self.mostar(self.marcoCinco)
         else:
-            self.ocultar(self.marcoDos)
+            self.ocultar(self.marco_dos)
 
     def mostrarProfesor(self):
         listaEtiqueta = []
@@ -387,11 +420,11 @@ class RegistroGral():
         lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL", "MAIL")
 
         for i in range(len(lista)):
-            listaEtiqueta.append(cpt.crear_E(self.marcoDos, lista[i]))
+            listaEtiqueta.append(cpt.crear_E(self.marco_dos, lista[i]))
             cpt.ordenar(listaEtiqueta[i], i, 0, 5, 5)
 
         for i in range(len(lista)):
-            listaCaja.append(cpt.crear_C(self.marcoDos, "70"))
+            listaCaja.append(cpt.crear_C(self.marco_dos, "70"))
             cpt.ordenar(listaCaja[i], i, 1, 5, 5)
 
     def mostrarAlumnos(self):
