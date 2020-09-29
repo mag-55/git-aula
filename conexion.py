@@ -5,7 +5,7 @@ import sqlite3
 from tkinter import messagebox
 
 
-class Base():
+class Base:
 
     def __init__(self):
         try:
@@ -15,7 +15,7 @@ class Base():
             messagebox.showerror(title="ERROR!", message=e)
 
 
-class Datos():
+class Datos:
 
     def __init__(self, lista_t=[], lista_v=[]):
 
@@ -57,7 +57,8 @@ class Datos():
 
         tabla = self.cambiarTabla()
         b = Base()
-        lista = b.conexion.execute('SELECT * FROM ' + tabla).description
+        sentencia = b.conexion.cursor()
+        lista = sentencia.execute('SELECT * FROM ' + tabla).description
         lista_campo = [item[0] for item in lista if not str(item[0]).startswith('id')]
 
         return lista_campo
@@ -165,32 +166,23 @@ class Datos():
         return lista_r
 
     def comp_us_clv(self, usuario, clave):
-
         db = Base()
-        consulta = 'SELECT COUNT(usuario) FROM preceptores'
+        consulta = 'SELECT id FROM preceptores WHERE usuario = ?'
         sentencia = db.conexion.cursor()
-        sentencia.execute(consulta)
-        longitud = sentencia.fetchone()[0]
-        valor = False
+        sentencia.execute(consulta, (usuario,))
+        id = sentencia.fetchone()
+        if id:
+            consulta1 = 'SELECT usuario, clave FROM preceptores WHERE id = ?'
+            sentencia.execute(consulta1, (id[0],))
+            valores_us = sentencia.fetchone()
 
-        for i in range(longitud):
-
-            consulta1 = 'SELECT usuario FROM preceptores WHERE id={}'.format(i+1)
-            sentencia.execute(consulta1)
-            usr = sentencia.fetchone()
-            usuario_t = str(usr[0])
-            consulta2 = 'SELECT clave FROM preceptores WHERE id={}'.format(i+1)
-            sentencia.execute(consulta2)
-            clv = sentencia.fetchone()
-            clave_t = str(clv[0])
-
-            if usuario_t == usuario and clave_t == clave:
-                valor = True
-
-        return valor
+            if valores_us[0] == usuario and valores_us[1] == clave:
+                return True
+        else:
+            return False
 
 
-class Consultas():
+class Consultas:
 
     def __init__(self, datos, condicion=''):
         self.base = Base()
@@ -239,6 +231,11 @@ class Consultas():
 
         return orden
 
+    def buscar_id(self, tabla, condicion, valor):
+        orden = 'SELECT id FROM ' + tabla + ' WHERE ' + condicion + '=' + valor
+        campo_id = self.ejecutar(orden)
+        return campo_id
+
     # aqui discrimina entre la lista de valores vacia o no, segun sea para agragar datos 
     # o para extraerlos con una u otra sentencia, es decir esta funcion esta dedicada a 
     # la EJECUCION de sentencias
@@ -275,6 +272,10 @@ class Consultas():
             conexion.rollback()
 
         except sqlite3.OperationalError as e:
+            messagebox.showerror(title="ERROR!", message=e)
+            conexion.rollback()
+
+        except sqlite3.DataError as e:
             messagebox.showerror(title="ERROR!", message=e)
             conexion.rollback()
 

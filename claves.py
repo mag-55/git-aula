@@ -17,7 +17,7 @@ y eliminación de rigistros todo requerido por las clases de formulario.py
 
 # chequea que el usuario sea el administrador para poder generar usuarios
 def chequear_a(raiz, lista):
-    if lista[0].get() == "adm" and lista[1].get() == "gral":
+    if lista[0].get() == "admin01" and lista[1].get() == "Admingral01":
         raiz.iconify()
         valor = "usuario"
         inc.abrir(valor)
@@ -30,12 +30,11 @@ def chequear_a(raiz, lista):
 
 # chequea que el usuario uno de los ya creados por el administrador
 def chequear_u(lista):
-    # if lista[0].get() == "adm" and lista[1].get() == "gral":
     usuario = lista[0].get()
     clave = lista[1].get()
     conn = con.Datos()
     respuesta = conn.comp_us_clv(usuario, clave)
-    if respuesta is True:
+    if respuesta:
         inc.abrir()
     else:
         messagebox.showwarning(title="DENEGADO!", message="Su autenticación es Incorrecta")
