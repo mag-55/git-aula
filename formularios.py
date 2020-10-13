@@ -76,9 +76,11 @@ class Acceso:
         self.listaCaja[1].configure(show="*")
 
     def registrar(self, event):
-        return clv.chequear_a(self.raiz, self.listaCaja)
+        self.raiz.iconify()
+        return clv.chequear_a(self.listaCaja)
 
     def chequear(self):
+        self.raiz.iconify()
         return clv.chequear_u(self.listaCaja)
 
     def cerrar(self):
@@ -90,13 +92,16 @@ class Acceso:
 
 class Manejo_registros:
 
-    def __init__(self, lista_caja=[], lista_boton=[]):
+    def __init__(self, tablas=[], lista_caja=[], lista_boton=[]):
         self.listaCaja = lista_caja
         self.listaBoton = lista_boton
+        self.lista_t = tablas
         self.lista_v = []
-        self.id = 0
         self.pos = []
         self.lista_f = []
+        self.id = 0
+        self.acu = 0
+        self.acu_dos = 0
 
     def obtenerValores(self):  # ok
         for i in range(len(self.listaCaja)):
@@ -123,6 +128,8 @@ class Manejo_registros:
 
         if len(self.lista_f) == len(self.listaCaja):
             for i in range(len(self.lista_f)):
+                if self.lista_f[i] is None:
+                    self.lista_f[i] = ''
                 self.listaCaja[i].insert(0, self.lista_f[i])
 
             self.lista_f = []
@@ -135,57 +142,79 @@ class Manejo_registros:
 
     def mostarPrevio(self):  # ok
         self.listaBoton[2].configure(state='normal')
+        chequear = False
         x = + 1
+        self.acu = self.acu + x
+        print(self.acu)
         self.id = self.id - x
         self.limpiar_casilleros()
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         condicion = "id = " + str(self.id)
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
+        tabla = 'preceptores'
+        cantidad = datos.contar_filas(tabla)
 
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
             if listado is None:
-                x = + 1
-                self.id = self.id - x
-                condicion = "id = " + str(self.id)
-                consulta = con.Consultas(datos, condicion)
-                listado = consulta.ejecutar(consulta.mostrar())
-                if listado is None:
+                if self.acu > cantidad:
+                    self.acu = 0
                     self.listaBoton[1].configure(state='disabled')
                     self.listaBoton[0].configure(state='normal')
                     break
-            self.mostrarValores(listado)
+                while chequear is False:
+                    x = + 1
+                    self.id = self.id - x
+                    condicion = "id = " + str(self.id)
+                    consulta = con.Consultas(datos, condicion)
+                    listado = consulta.ejecutar(consulta.mostrar())
+                    if listado is not None:
+                        self.mostrarValores(listado)
+                        chequear = True
+            else:
+                self.mostrarValores(listado)
 
     def mostarSiguiente(self):  # ok
         self.listaBoton[1].configure(state='normal')
         self.listaBoton[0].configure(state='disable')
+        chequear = False
         x = + 1
+        self.acu_dos = self.acu_dos + x
+        print(self.acu_dos)
         self.id = self.id + x
         self.limpiar_casilleros()
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         condicion = "id = " + str(self.id)
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
+        tabla = 'preceptores'
+        cantidad = datos.contar_filas(tabla)
 
         for i in range(len(lista_t)):
             datos.set_i(i)
             listado = consulta.ejecutar(consulta.mostrar())
             if listado is None:
-                x = + 1
-                self.id = self.id + x
-                condicion = "id = " + str(self.id)
-                consulta = con.Consultas(datos, condicion)
-                listado = consulta.ejecutar(consulta.mostrar())
-                if listado is None:
+                if self.acu_dos >= cantidad:
+                    self.acu_dos = 0
                     self.listaBoton[2].configure(state='disabled')
                     break
-            self.mostrarValores(listado)
+                while chequear is False:
+                    x = + 1
+                    self.id = self.id + x
+                    condicion = "id = " + str(self.id)
+                    consulta = con.Consultas(datos, condicion)
+                    listado = consulta.ejecutar(consulta.mostrar())
+                    if listado is not None:
+                        self.mostrarValores(listado)
+                        chequear = True
+            else:
+                self.mostrarValores(listado)
 
     def guardar(self):  # ok
         lista_v = self.obtenerValores()
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         datos = con.Datos(lista_t, lista_v)
         consulta = con.Consultas(datos)
 
@@ -195,7 +224,7 @@ class Manejo_registros:
 
     def editar(self):  # ok
         lista_v = []
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         condicion = "id = " + str(self.id)
         posicion = self.pos
 
@@ -216,7 +245,7 @@ class Manejo_registros:
         clv.op_exitosa()
 
     def borrar(self):  # ok
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         condicion = "id = " + str(self.id)
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
@@ -238,7 +267,7 @@ class Manejo_registros:
         id = consulta.buscar_id(tabla, condicion, valor)
 
         self.limpiar_casilleros()
-        lista_t = ['preceptores', 'barrio', 'localidad']
+        lista_t = self.lista_t
         condicion = "id = " + str(id[0])
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
@@ -260,14 +289,12 @@ class RegistroUsuario:
         self.listaEtiqueta = []
         self.listaCaja = []
         self.listaBoton = []
-        #self.lista_v = []
-        #self.id = 0
-        #self.pos = []
-        #self.lista_f = []
         self.caja_buscar = None
+        self.lista_t = []
         list_caja = self.listaCaja
         list_boton = self.listaBoton
-        self.mr = Manejo_registros(list_caja, list_boton)
+        tablas = ['preceptores', 'barrio', 'localidad']
+        self.mr = Manejo_registros(tablas, list_caja, list_boton)
 
     # ----------- VENTANA REGISTRO DE USUARIO -----------
 
@@ -330,7 +357,7 @@ class RegistroUsuario:
 
     # ----------- FUNC SALIDA DEL FORMULARIO-----------
 
-    def salirFormulario (self): # VER ESTO NO SE COMPORTA COMO DEBERIA!!!!
+    def salirFormulario (self):  # VER ESTO NO SE COMPORTA COMO DEBERIA!!!!
         self.ventana.destroy()
         inc.iniciar()
 
@@ -351,7 +378,7 @@ class RegistroUsuario:
     def chequear_Cl1_Cl2(self, event):
         return clv.compararClaves(self.listaCaja)
     
-    # ----------- FUNC GUARDAR, EDITAR, BORRAR-----------
+    # ----------- FUNC GUARDAR, EDITAR, BORRAR, BUSCAR-----------
 
     def ob_val(self):
         self.mr.obtenerValores()
@@ -383,156 +410,6 @@ class RegistroUsuario:
     def buscar(self):
         valor = self.caja_buscar.get()
         self.mr.buscar(valor)
-# ----------------------------------------------------------------
-#     def obtenerValores(self): #ok
-#         for i in range(len(self.listaCaja)):
-#             self.lista_v.append(self.listaCaja[i].get())
-#
-#         return self.lista_v
-#
-#     def obtenerPosicion(self, event): #ok
-#         self.listaBoton[3].configure(state='normal')
-#         event.widget.delete(0, tk.END)
-#         pos = str(event.widget.focus_get())
-#
-#         if pos[-1] == "y":
-#             indice = 1
-#         elif pos[-3] == "y":
-#             indice = int(pos[-2: ])
-#         else:
-#             indice = int(pos[-1])
-#
-#         self.pos.append(indice)
-#
-#     def mostrarValores(self, listado): #ok
-#         self.lista_f.extend(listado)
-#
-#         if len(self.lista_f) == len(self.listaCaja):
-#             for i in range(len(self.lista_f)):
-#                 self.listaCaja[i].insert(0, self.lista_f[i])
-#
-#             self.lista_f = []
-#
-#     def limpiar_casilleros(self):
-#         for i in range(len(self.listaCaja)):
-#             self.listaCaja[i].delete(0, tk.END)
-#             if self.listaCaja[i] != self.listaCaja[0]:  # VER SOLUCIONAR ESTE DETALLE
-#                 self.listaCaja[i].configure(state='normal')
-#
-#     def mostarPrevio(self):  # ok
-#         self.listaBoton[2].configure(state='normal')
-#         x = + 1
-#         self.id = self.id - x
-#         self.limpiar_casilleros()
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         condicion = "id = " + str(self.id)
-#         datos = con.Datos(lista_t)
-#         consulta = con.Consultas(datos, condicion)
-#
-#         for i in range(len(lista_t)):
-#             datos.set_i(i)
-#             listado = consulta.ejecutar(consulta.mostrar())
-#             if listado is None:
-#                 x = + 1
-#                 self.id = self.id - x
-#                 condicion = "id = " + str(self.id)
-#                 consulta = con.Consultas(datos, condicion)
-#                 listado = consulta.ejecutar(consulta.mostrar())
-#                 if listado is None:
-#                     self.listaBoton[1].configure(state='disabled')
-#                     self.listaBoton[0].configure(state='normal')
-#                     break
-#             self.mostrarValores(listado)
-#
-#     def mostarSiguiente(self):  # ok
-#         self.listaBoton[1].configure(state='normal')
-#         self.listaBoton[0].configure(state='disable')
-#         x = + 1
-#         self.id = self.id + x
-#         self.limpiar_casilleros()
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         condicion = "id = " + str(self.id)
-#         datos = con.Datos(lista_t)
-#         consulta = con.Consultas(datos, condicion)
-#
-#         for i in range(len(lista_t)):
-#             datos.set_i(i)
-#             listado = consulta.ejecutar(consulta.mostrar())
-#             if listado is None:
-#                 x = + 1
-#                 self.id = self.id + x
-#                 condicion = "id = " + str(self.id)
-#                 consulta = con.Consultas(datos, condicion)
-#                 listado = consulta.ejecutar(consulta.mostrar())
-#                 if listado is None:
-#                     self.listaBoton[2].configure(state='disabled')
-#                     break
-#             self.mostrarValores(listado)
-#
-#     def guardar(self):  # ok
-#         lista_v = self.obtenerValores()
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         datos = con.Datos(lista_t, lista_v)
-#         consulta = con.Consultas(datos)
-#
-#         for i in range(len(lista_t)):  # de esta manera va cambiando las tablas, de lo contrario solo rellena la primera
-#             datos.set_i(i)
-#             consulta.ejecutar(consulta.insertar())
-#
-#     def editar(self):  # ok
-#         lista_v = []
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         condicion = "id = " + str(self.id)
-#         posicion = self.pos
-#
-#         for i in range(len(self.pos)):
-#             x = posicion[i] - 1
-#             lista_v.append(self.listaCaja[x].get())
-#
-#         datos = con.Datos(lista_t, lista_v)
-#         datos.set_posicion(posicion)
-#         consulta = con.Consultas(datos, condicion)
-#         consulta.ejecutar(consulta.actualizar())
-#
-#         while not datos.posicion == []:
-#             datos.set_i(0)
-#             datos.longitud = 0
-#             consulta.ejecutar(consulta.actualizar())
-#
-#         clv.op_exitosa()
-#
-#     def borrar(self):  # ok
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         condicion = "id = " + str(self.id)
-#         datos = con.Datos(lista_t)
-#         consulta = con.Consultas(datos, condicion)
-#
-#         for i in range(len(lista_t)):
-#             datos.set_i(i)
-#             consulta.ejecutar(consulta.borrar())
-#
-#         for i in range(len(self.listaCaja)):
-#             self.listaCaja[i].delete(0, tk.END)
-#
-#     # ----------- FUNC BUSCAR DNI-----------
-#
-#     def buscar(self):
-#         tabla = "preceptores"
-#         valor = self.caja_buscar.get()
-#         datos = con.Datos()
-#         consulta = con.Consultas(datos)
-#         id = consulta.buscar_id(tabla, valor)
-#
-#         self.limpiar_casilleros()
-#         lista_t = ['preceptores', 'barrio', 'localidad']
-#         condicion = "id = " + str(id[0])
-#         datos = con.Datos(lista_t)
-#         consulta = con.Consultas(datos, condicion)
-#
-#         for i in range(len(lista_t)):
-#             datos.set_i(i)
-#             listado = consulta.ejecutar(consulta.mostrar())
-#             self.mostrarValores(listado)
 
 
 # FORMULARIO DE INGRESO DE DATOS
@@ -543,6 +420,9 @@ class RegistroGral:
     def __init__(self, ventana):
         self.ventana = ventana
         self.ventana.title("BIENVENIDO AL AULA")
+        self.tablas = []
+        self.listaCaja = []
+        self.listaBoton = []
         self.list_spin = None
         self.marcoSpin = cpt.crear_M(self.ventana, "500", "50")
         cpt.ordenar(self.marcoSpin, 0, 0)
@@ -560,21 +440,32 @@ class RegistroGral:
         self.mostrarAlumnos()
         self.mostrarCursos()
         self.mostrarMaterias()
+        tablas = self.tablas
+        lista_caja = self.listaCaja
+        lista_boton = self.listaBoton
+        self.mr = Manejo_registros(tablas, lista_caja, lista_boton)
+        self.caja_buscar = None
+
+    # ----------- VENTANA REGISTRO DE GRAL -----------
 
     def registrarGral(self):
         lista = ("SELECCIONE UNA OPCION", "PROFESORES", "ALUMNOS", "MATERIAS", "CURSOS")
         lista2 = ("GUARDAR", "PREVIO", "SIGUIENTE", "EDITAR", "BORRAR", "SALIR")
-        listaBoton = []
-        comando = quit
+        comando = [self.guardar, self.most_prev, self.most_sig, self.editar, self.borrar, self.salirFormulario]
+
+        # ----------- MARCO Y LISTA SPIN-----------
 
         seleccion = self.ventana.register(self.capturar)
         self.list_spin = cpt.crear_Sp(self.marcoSpin, lista, "80", "normal", "center", comando=seleccion)
         cpt.ordenar(self.list_spin, 0, 0, 5, 5, "N")
 
+        # ----------- MARCO Y LISTA DE BOTONES-----------
+
         for i in range(len(lista2)):
-            listaBoton.append(cpt.crear_B(
-                self.marcoBoton, lista2[i], "10", comando))
-            cpt.ordenar(listaBoton[i], 0, i, 0, 5)
+            self.listaBoton.append(cpt.crear_B(self.marcoBoton, lista2[i], "10", comando[i]))
+            cpt.ordenar(self.listaBoton[i], 0, i, 0, 5)
+
+    # ----------- FUNC MOSTRAR, OCULTAR Y CAPTURAR MARCOS-----------
 
     def ocultar(self, marco):
         marco.grid_forget()
@@ -602,18 +493,26 @@ class RegistroGral:
         else:
             self.ocultar(self.marco_dos)
 
+    # ----------- FUNC MARCOS CON SUS ETIQUETAS Y CAJAS-----------
+
     def mostrarProfesor(self):
         listaEtiqueta = []
-        listaCaja = []
-        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "DIRECCION", "TEL", "MAIL")
+        self.tablas = ['profesores', 'barrio', 'localidad']
+        lista = ("NOMBRE", "APELLIDO", "DNI", "FECHA", "TEL", "MAIL", "CALLE", "BARRIO", "LOCALIDAD", "CP")
+
+        # ----------- ETIQUETAS mDOS-----------
 
         for i in range(len(lista)):
             listaEtiqueta.append(cpt.crear_E(self.marco_dos, lista[i]))
             cpt.ordenar(listaEtiqueta[i], i, 0, 5, 5)
 
+        # ----------- CAJAS mDOS-----------
+
         for i in range(len(lista)):
-            listaCaja.append(cpt.crear_C(self.marco_dos, "70"))
-            cpt.ordenar(listaCaja[i], i, 1, 5, 5)
+            self.listaCaja.append(cpt.crear_C(self.marco_dos, "70"))
+            cpt.ordenar(self.listaCaja[i], i, 1, 5, 5)
+
+        self.listaCaja[i].bind_class("Entry", "<Double-Button-1>", self.ob_pos)
 
     def mostrarAlumnos(self):
         listaEtiqueta = []
@@ -640,8 +539,7 @@ class RegistroGral:
 
         etiqueta_curso = cpt.crear_E(self.marcoCinco, "AÑO")
         cpt.ordenar(etiqueta_curso, 0, 0, 5, 5)
-        list_spin1 = cpt.crear_Sp(
-            self.marcoCinco, lista, "15", "normal", "center")
+        list_spin1 = cpt.crear_Sp(self.marcoCinco, lista, "15", "normal", "center")
         cpt.ordenar(list_spin1, 0, 1, 5, 5)
 
         for i in range(len(lista2)):
@@ -679,3 +577,42 @@ class RegistroGral:
         for i in range(len(lista)):
             listaCaja.append(cpt.crear_C(self.marcoCuatro, "70"))
             cpt.ordenar(listaCaja[i], i, 1, 5, 5)
+
+    # ----------- FUNC SALIDA DEL FORMULARIO-----------
+
+    def salirFormulario (self): # VER ESTO NO SE COMPORTA COMO DEBERIA!!!!
+        self.ventana.destroy()
+        inc.iniciar()
+
+    # ----------- FUNC GUARDAR, EDITAR, BORRAR, BUSCAR-----------
+
+    def ob_val(self):
+        self.mr.obtenerValores()
+
+    def ob_pos(self, event):
+        self.mr.obtenerPosicion(event=event)
+
+    def most_val(self, listado):
+        self.mr.mostrarValores(listado)
+
+    def lim_caslleros(self):
+        self.mr.limpiar_casilleros()
+
+    def most_prev(self):
+        self.mr.mostarPrevio()
+
+    def most_sig(self):
+        self.mr.mostarSiguiente()
+
+    def guardar(self):
+        self.mr.guardar()
+
+    def editar(self):
+        self.mr.editar()
+
+    def borrar(self):
+        self.mr.borrar()
+
+    def buscar(self):
+        valor = self.caja_buscar.get()
+        self.mr.buscar(valor)

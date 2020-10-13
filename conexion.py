@@ -181,6 +181,14 @@ class Datos:
         else:
             return False
 
+    def contar_filas(self, tabla):
+        db = Base()
+        consulta = 'SELECT id FROM ' + tabla
+        sentencia = db.conexion.cursor()
+        sentencia.execute(consulta)
+        cantidad = (len(sentencia.fetchall()))
+        return cantidad
+
 
 class Consultas:
 

@@ -16,9 +16,8 @@ y eliminación de rigistros todo requerido por las clases de formulario.py
 
 
 # chequea que el usuario sea el administrador para poder generar usuarios
-def chequear_a(raiz, lista):
+def chequear_a(lista):
     if lista[0].get() == "admin01" and lista[1].get() == "Admingral01":
-        raiz.iconify()
         valor = "usuario"
         inc.abrir(valor)
     else:
