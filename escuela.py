@@ -13,33 +13,26 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS alumnos(
 	fecha TEXT,
 	telefono TEXT,
 	mail TEXT,
-	modificado TEXT,
 	id_ba INTEGER,
-	id_loc INTEGER,
 	id_pre INTEGER,
 	id_curso INTEGER,
 	FOREIGN KEY(id_curso) REFERENCES curso(id),
 	FOREIGN KEY(id_pre) REFERENCES preceptores(id),
-	FOREIGN KEY(id_loc) REFERENCES localidad(id),
 	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
-	
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS profesores(
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_prof INTEGER PRIMARY KEY AUTOINCREMENT,
 	nombre TEXT,
 	apellido TEXT,
 	dni INTEGER UNIQUE,
 	fecha TEXT,
 	telefono TEXT,
 	mail TEXT,
-	modificado TEXT,
 	id_ba INTEGER,
-	id_loc INTEGER,
-	FOREIGN KEY(id_loc) REFERENCES localidad(id),
-	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
+	FOREIGN KEY(id_ba) REFERENCES barrio(id_ba));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS preceptores(
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	id_pre INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	usuario TEXT,
 	clave TEXT,
 	conf_clave TEXT,
@@ -50,21 +43,19 @@ conexion.execute("""CREATE TABLE IF NOT EXISTS preceptores(
 	telefono TEXT,
 	mail TEXT, 
 	id_ba INTEGER,
-	id_loc INTEGER,
-	FOREIGN KEY(id_loc) REFERENCES localidad(id),
-	FOREIGN KEY(id_ba) REFERENCES barrio(id));""")
-
-conexion.execute("""CREATE TABLE IF NOT EXISTS localidad(
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-	localidad TEXT,
-	CP INTEGER);""")
+	FOREIGN KEY(id_ba) REFERENCES barrio(id_ba));""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS barrio(
-	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	id_ba INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 	calle TEXT,
 	barrio TEXT,
 	id_loc INTEGER,
-	FOREIGN KEY(id_loc) REFERENCES localidad(id));""")
+	FOREIGN KEY(id_loc) REFERENCES localidad(id_loc));""")
+
+conexion.execute("""CREATE TABLE IF NOT EXISTS localidad(
+	id_loc INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	localidad TEXT,
+	CP INTEGER);""")
 
 conexion.execute("""CREATE TABLE IF NOT EXISTS materias(
 	id INTEGER PRIMARY KEY AUTOINCREMENT,

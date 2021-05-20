@@ -32,6 +32,7 @@ class Datos:
         self.i = 0
         self.posicion = []
         self.repetido = 0
+        self.item = None
 
     def set_i(self, i):  # ok
         self.i = i
@@ -59,8 +60,8 @@ class Datos:
         b = Base()
         sentencia = b.conexion.cursor()
         lista = sentencia.execute('SELECT * FROM ' + tabla).description
-        lista_campo = [item[0] for item in lista if not str(item[0]).startswith('id')]
-
+        lista_campo = [self.item[0] for self.item in lista if not str(self.item[0]).startswith('id')]
+        print(self.item[0])
         return lista_campo
 
     # esta func hace coincidir los valores ingresados por teclado con los campos de una tabla 
@@ -167,13 +168,14 @@ class Datos:
 
     def comp_us_clv(self, usuario, clave):
         db = Base()
-        consulta = 'SELECT id FROM preceptores WHERE usuario = ?'
+        consulta = 'SELECT id_pre FROM preceptores WHERE usuario = ?'
         sentencia = db.conexion.cursor()
         sentencia.execute(consulta, (usuario,))
         id = sentencia.fetchone()
         if id:
-            consulta1 = 'SELECT usuario, clave FROM preceptores WHERE id = ?'
-            sentencia.execute(consulta1, (id[0],))
+            x = str(id[0])
+            consulta1 = 'SELECT usuario, clave FROM preceptores WHERE id_pre =' + x
+            sentencia.execute(consulta1)
             valores_us = sentencia.fetchone()
 
             if valores_us[0] == usuario and valores_us[1] == clave:
@@ -181,9 +183,9 @@ class Datos:
         else:
             return False
 
-    def contar_filas(self, tabla):
+    def contar_filas(self, campo, tabla):
         db = Base()
-        consulta = 'SELECT id FROM ' + tabla
+        consulta = 'SELECT ' + campo + ' FROM ' + tabla
         sentencia = db.conexion.cursor()
         sentencia.execute(consulta)
         cantidad = (len(sentencia.fetchall()))
@@ -205,10 +207,17 @@ class Consultas:
         tabla = self.dato.cambiarTabla()
         campos = ', '.join(self.dato.obtenerCampos())
 
+        # tengo que poner inner join para consulta combinada de tablas
         if self.condicion == "":
             orden = 'SELECT ' + campos + ' FROM ' + tabla
         else:
             orden = 'SELECT ' + campos + ' FROM ' + tabla + ' WHERE ' + self.condicion
+
+            # orden2 = 'SELECT profesores.nombre, barrio.calle, localidad.localidad FROM profesores INNER JOIN barrio ON barrio.id_ba = profesores.id_ba INNER JOIN localidad ON localidad.id_loc = barrio.id_loc'
+            # sentencia = self.base.conexion.cursor()
+            # sentencia.execute(orden2)
+            # registro2 = sentencia.fetchone()
+            # print("el registro2 es: " + str(registro2))
 
         return orden
 

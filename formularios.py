@@ -140,20 +140,18 @@ class Manejo_registros:
             if self.listaCaja[i] != self.listaCaja[0]:  # VER SOLUCIONAR ESTE DETALLE
                 self.listaCaja[i].configure(state='normal')
 
-    def mostarPrevio(self):  # ok
+    def mostarPrevio(self, tabla):  # ok
         self.listaBoton[2].configure(state='normal')
         chequear = False
         x = + 1
         self.acu = self.acu + x
-        print(self.acu)
         self.id = self.id - x
         self.limpiar_casilleros()
         lista_t = self.lista_t
-        condicion = "id = " + str(self.id)
+        condicion = lista_t[0] + str(self.id)
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
-        tabla = 'preceptores'
-        cantidad = datos.contar_filas(tabla)
+        cantidad = datos.contar_filas(lista_t[0], tabla)
 
         for i in range(len(lista_t)):
             datos.set_i(i)
@@ -176,21 +174,22 @@ class Manejo_registros:
             else:
                 self.mostrarValores(listado)
 
-    def mostarSiguiente(self):  # ok
+    def mostarSiguiente(self, tabla):  # ok
         self.listaBoton[1].configure(state='normal')
         self.listaBoton[0].configure(state='disable')
         chequear = False
         x = + 1
         self.acu_dos = self.acu_dos + x
-        print(self.acu_dos)
         self.id = self.id + x
         self.limpiar_casilleros()
         lista_t = self.lista_t
-        condicion = "id = " + str(self.id)
+        campo = 'id_prof'
+        # no es lista_t es lista_v[0], tiene que salir id_pre o id_prof etc segun tabla
+        condicion = campo + ' = ' + str(self.id)
+        print(condicion)
         datos = con.Datos(lista_t)
         consulta = con.Consultas(datos, condicion)
-        tabla = 'preceptores'
-        cantidad = datos.contar_filas(tabla)
+        cantidad = datos.contar_filas(campo, tabla)
 
         for i in range(len(lista_t)):
             datos.set_i(i)
@@ -241,8 +240,6 @@ class Manejo_registros:
             datos.set_i(0)
             datos.longitud = 0
             consulta.ejecutar(consulta.actualizar())
-
-        clv.op_exitosa()
 
     def borrar(self):  # ok
         lista_t = self.lista_t
@@ -393,10 +390,12 @@ class RegistroUsuario:
         self.mr.limpiar_casilleros()
 
     def most_prev(self):
-        self.mr.mostarPrevio()
+        tabla = "preceptores"
+        self.mr.mostarPrevio(tabla)
 
     def most_sig(self):
-        self.mr.mostarSiguiente()
+        tabla = "preceptores"
+        self.mr.mostarSiguiente(tabla)
 
     def guardar(self):
         self.mr.guardar()
@@ -599,10 +598,12 @@ class RegistroGral:
         self.mr.limpiar_casilleros()
 
     def most_prev(self):
-        self.mr.mostarPrevio()
+        tabla = "profesores"
+        self.mr.mostarPrevio(tabla)
 
     def most_sig(self):
-        self.mr.mostarSiguiente()
+        tabla = "profesores"
+        self.mr.mostarSiguiente(tabla)
 
     def guardar(self):
         self.mr.guardar()
