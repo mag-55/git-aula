@@ -29,6 +29,7 @@ def abrir(valor=""):
     if valor == "usuario":
         RegU = form.RegistroUsuario(ventana)
         RegU.registrarUs()
+        
     else:
         RegG = form.RegistroGral(ventana)
         RegG.registrarGral()

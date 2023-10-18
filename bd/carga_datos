@@ -1,0 +1,117 @@
+
+# ------------------------- ### ------------------------------------
+
+INSERT INTO personas (nombre, apellido, dni, fecha, telefono, mail, actividad) VALUES ('Jose', 'Colazo', 25122478, '04/09/1976', '3537334877', 'pepecol@gmail.com', 'preceptor');
+
+INSERT INTO contraseña (usuario, clave, conf_clave, id_per) VALUES ('pepe11', 'Pepe1122', 'Pepe1122', 2);
+
+INSERT INTO barrio (calle, barrio, id_per) VALUES ('Cerrito 499', 'Sur', 1);
+
+INSERT INTO localidad (localidad, CP, id_ba) VALUES ('Bell Ville', 2550);
+
+
+SELECT * FROM preceptores, barrio, localidad WHERE preceptores.id_ba = barrio.id AND barrio.id_loc = localidad.id;
+
+# ------------------------- ### ------------------------------------
+
+INSERT INTO alumnos_profesores (nombre, apellido, dni, fecha, telefono, mail, actividad) VALUES ('Jose', 'Flores', 22585741, '11/08/1997', '3537324471', 'josef@hotmail.com', 'alumno');
+
+INSERT INTO division (seccion) VALUES ('a'), ('b');
+
+INSERT INTO curso (anio) VALUES ('Primero'), ('Segundo'), ('Tercero'), ('Cuarto'), ('Quinto');
+
+INSERT INTO turno (mt) VALUES ('mañana'), ('tarde');
+
+INSERT INTO materias (asignatura) VALUES ('Matematica I'), ('Fisica'), ('Geometria'), ('Ciencia de Datos'), ('Estadistica'), ('Algebra'), ('Matematica II'), ('Fisica II'), ('Algebra Lineal'), ('Programacion'), ('Estructura de datos'), ('Algoritmos'), ('Bases de Datos'), ('Redes');
+
+
+INSERT INTO curso_division_turno (id_cur, id_div, id_tur, id_per) VALUES (1, 2, 2, 25);
+
+
+INSERT INTO mat_nota (id_mat, id_nota) VALUES (1, 3), (2, 7), (3, 7);
+
+
+INSERT INTO barrio (calle, barrio, id_per) VALUES ('Cordoba 41', 'Centro', 1);
+
+
+INSERT INTO localidad (localidad, CP, id_ba) VALUES ('Bell Ville', 2550);
+
+
+
+# ---------------------- #### --------------------------------- sel nomb, apellido, año, div, turno.
+
+SELECT nombre, apellido, anio, seccion, mt FROM alumnos_profesores, curso, division, turno, div_curso, curso_tur WHERE alumnos_profesores.id_div = division.id AND division.id = div_curso.id_div AND curso.id = div_curso.id_cur AND curso.id = curso_tur.id_cur AND turno.id = curso_tur.id_tur;
+
+# ---------------------- #### --------------------------------- sel nomb, apellido, materias, año.
+
+SELECT nombre, apellido, asignatura, anio FROM alumnos_profesores, division, curso, materias, div_curso  WHERE alumnos_profesores.id_div = division.id AND division.id = div_curso.id_div AND curso.id = div_curso.id_cur AND materias.id_curso = curso.id;
+
+# ---------------------- #### --------------------------------- sel nomb, apellido, materias, calific.
+
+SELECT nombre, apellido, dni, asignatura, calific FROM personas, materias, notas, mat_nota  WHERE personas.id = mat_nota.id_per AND materias.id = mat_nota.id_mat AND notas.id = mat_nota.id_nota;
+
+
+SELECT nombre, apellido, actividad, anio, seccion, mt 
+FROM personas, curso, division, turno, curso_division_turno 
+WHERE personas.id = curso_division_turno.id_per 
+AND division.id = curso_division_turno.id_div 
+AND curso.id = curso_division_turno.id_cur 
+AND turno.id = curso_division_turno.id_tur;
+
+
+# ---> PRAGMA foreign_keys = ON;
+
+# FOREIGN KEY(pipeline, owner) REFERENCES pipelines(name, owner)
+# dos claves externas que hacen referencia a dos ids de una tabla
+
+-----------------------------------------------------------------
+
+SELECT * FROM personas, barrio, localidad, materias, mat_nota WHERE personas.id = barrio.id_per AND barrio.id = localidad.id_ba AND personas.id = mat_nota.id_per AND materias.id = mat_nota.id_mat;
+
+
+
+SELECT * FROM contraseña, personas, barrio, localidad WHERE personas.id = barrio.id_per AND barrio.id = localidad.id_ba AND personas.id = contraseña.id_per;
+
+
+
+estas dos son las que hay que tratar, tal vez hacer dos consultas porque cuando se incluye division curso y turno el profesor no aparece, ahi esta el problema.
+
+SELECT asignatura, personas.nombre, personas.apellido FROM materias, personas, curso, division, turno, curso_division_turno WHERE personas.id = curso_division_turno.id_per AND curso.id = curso_division_turno.id_cur AND division.id = curso_division_turno.id_div AND turno.id = curso_division_turno.id_tur AND materias.id_cur = curso.id;
+
+SELECT asignatura, personas.nombre, personas.apellido FROM personas, materias, mat_nota WHERE personas.id = mat_nota.id_per AND materias.id = mat_nota.id_mat;
+
+
+SELECT asignatura, personas.nombre, personas.apellido FROM personas, materias, curso, mat_nota WHERE personas.id = mat_nota.id_per AND materias.id = mat_nota.id_mat AND personas.actividad = 'profesor' AND materias.id_cur = curso.id AND curso.anio = 'Primero';
+
+
+Combinacion de ambas anteriores
+
+
+SELECT materias.asignatura, personas.nombre, personas.apellido
+FROM personas
+JOIN mat_nota ON personas.id = mat_nota.id_per
+JOIN materias ON mat_nota.id_mat = materias.id
+WHERE personas.actividad = 'profesor'
+UNION
+SELECT materias.asignatura, personas.nombre, personas.apellido
+FROM materias
+JOIN curso ON materias.id_cur = curso.id
+JOIN curso_division_turno ON curso.id = curso_division_turno.id_cur
+JOIN division ON curso_division_turno.id_div = division.id
+JOIN turno ON curso_division_turno.id_tur = turno.id
+JOIN personas ON curso_division_turno.id_per = personas.id
+WHERE curso.anio = 'Primero' AND division.seccion = 'b' AND turno.mt = 'tarde';
+
+
+SELECT nombre, apellido, dni, actividad, anio, asignatura, calific FROM personas, curso, materias, notas, mat_nota WHERE personas.id = mat_nota.id_per AND materias.id = mat_nota.id_mat AND notas.id = mat_nota.id_nota AND curso.id = materias.id_cur  AND anio = 'Primero' AND personas.actividad = 'alumno';
+
+
+SELECT mat_nota.id FROM mat_nota, materias WHERE materias.id = mat_nota.id_mat AND materias.asignatura = 'Matematica I' AND mat_nota.id_per = 25;
+
+UPDATE mat_nota SET id_nota = 6 WHERE mat_nota.id_per = 25 AND (SELECT id FROM materias WHERE materias .asignatura = 'Matematica I')
+
+SELECT mat_nota.id FROM mat_nota WHERE mat_nota.id_per = 25;
+
+
+
+

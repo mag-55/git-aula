@@ -45,8 +45,8 @@ def crear_Sp(contenedor, valores="", ancho="20", estado="", posicion="", texv=""
     return listaSpin
 
 
-def crear_Rb(contenedor, titulo="", valor=0, var=""):
-   radioBoton = tk.Radiobutton(contenedor, text=titulo, value=valor, variable=var)
+def crear_Rb(contenedor, titulo="", var="", valor=0):
+   radioBoton = tk.Radiobutton(contenedor, text=titulo, variable=var, value=valor)
    return radioBoton
 
 
