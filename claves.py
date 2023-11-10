@@ -3,7 +3,7 @@
 
 import tkinter as tk
 from tkinter import messagebox
-import inicio as inc
+import main as inc
 
 """
 Este modulo cuntiene distintas func para chequear ek ingreso de
